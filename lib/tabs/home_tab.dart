@@ -154,8 +154,8 @@ class _HomeTabState extends State<HomeTab> {
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MuscleListScreen(
-                          false, 0, null, null, 0, model.firebaseUser.uid)));
+                      builder: (context) => MuscleListScreen(false, 0, null,
+                          null, 0, model.firebaseUser.uid, null)));
                 },
                 child: Container(
                     alignment: Alignment.topLeft,
@@ -251,7 +251,7 @@ class _HomeTabState extends State<HomeTab> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Controle de\nPersonal Trainer",
+                              "Meu Personal Trainer",
                               style: TextStyle(
                                   color: Colors.grey[900],
                                   fontFamily: "GothamBold",
@@ -262,7 +262,7 @@ class _HomeTabState extends State<HomeTab> {
                               height: 5,
                             ),
                             AutoSizeText(
-                              "Veja seus pedidos de conexão ou corte conexão com seu Personal Trainer",
+                              "Veja pedidos de conexão ou corte conexão com seu Personal Trainer",
                               maxLines: 3,
                               style: TextStyle(
                                   color: Colors.grey[900],

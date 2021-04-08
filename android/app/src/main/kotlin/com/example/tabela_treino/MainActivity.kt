@@ -1,4 +1,4 @@
-package com.example.tabela_treino
+package br.com.palmyro.treino_facil
 
 import io.flutter.embedding.android.FlutterActivity
 

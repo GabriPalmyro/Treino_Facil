@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tabela_treino/models/user_model.dart';
+import 'package:tabela_treino/widgets/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
@@ -304,9 +305,10 @@ class _TokenScreenState extends State<TokenScreen> {
         length: 2,
         child: Scaffold(
             key: _scaffoldKey,
+            drawer: CustomDrawer(3),
             appBar: AppBar(
               title: Text(
-                "Seu Personal",
+                "Meu Personal",
                 style: TextStyle(fontFamily: "GothamBold", fontSize: 20),
               ),
               centerTitle: true,
@@ -384,8 +386,18 @@ class _TokenScreenState extends State<TokenScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: Image.network(snapshot.data.docs[0]
-                                        ["personal_photo"]),
+                                    child: Image.network(
+                                        snapshot.data.docs[0]["personal_photo"],
+                                        fit: BoxFit.fitWidth,
+                                        loadingBuilder: (BuildContext context,
+                                            Widget child,
+                                            ImageChunkEvent loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    }),
                                   ),
                                 ),
                                 SizedBox(
@@ -662,7 +674,24 @@ class _TokenScreenState extends State<TokenScreen> {
                                                         child: Image.network(
                                                             snapshot.data
                                                                     .docs[0][
-                                                                "personal_photo"]),
+                                                                "personal_photo"],
+                                                            fit:
+                                                                BoxFit.fitWidth,
+                                                            loadingBuilder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    Widget
+                                                                        child,
+                                                                    ImageChunkEvent
+                                                                        loadingProgress) {
+                                                          if (loadingProgress ==
+                                                              null) {
+                                                            return child;
+                                                          }
+                                                          return Center(
+                                                              child:
+                                                                  CircularProgressIndicator());
+                                                        }),
                                                       ),
                                                     ),
                                                     Padding(

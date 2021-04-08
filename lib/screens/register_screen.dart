@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
@@ -39,6 +42,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _mudarObscure(bool obscureText) {
     setState(() {
       obscureText = !obscureText;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _countryIdController.text = "55";
+  }
+
+  File _image2;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    // ignore: deprecated_member_use
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
+    setState(() {
+      if (pickedFile != null) {
+        print(pickedFile.path);
+        _image2 = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
     });
   }
 
@@ -82,8 +109,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 key: _formKey,
                 child: ListView(
                   physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.only(top: 40.0, left: 30, right: 30),
+                  padding: EdgeInsets.only(top: 20.0, left: 30, right: 30),
                   children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(60),
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: new BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  spreadRadius: 3,
+                                  blurRadius: 10,
+                                  offset: Offset(
+                                      0, 4), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: _image2 == null
+                                ? Image.asset(
+                                    "images/blank-profile-picture.png",
+                                    fit: BoxFit.contain,
+                                  )
+                                : Image.file(
+                                    _image2,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 1,
+                          right: 1,
+                          child: IconButton(
+                              icon: Icon(
+                                Icons.image_search,
+                                color: Colors.white,
+                              ),
+                              onPressed: () async {
+                                await getImage();
+                              }),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -371,6 +445,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             // ignore: missing_return
                             validator: (text) {
+                              if (text.contains(" "))
+                                return "Senha contêm espaço";
                               if (text.isEmpty || text.length < 8)
                                 return "Senha Inválida!";
                             },
@@ -671,42 +747,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (_countryIdController.text.isEmpty)
                             _countryIdController.text = "55";
                           Map<String, dynamic> userData = {
-                            "name": _nameController.text[0].toUpperCase() +
-                                _nameController.text.substring(1),
-                            "last_name":
-                                _lastNameController.text[0].toUpperCase() +
-                                    _lastNameController.text.substring(1),
-                            "email": _emailController.text,
+                            "name":
+                                _nameController.text[0].trim().toUpperCase() +
+                                    _nameController.text.trim().substring(1),
+                            "last_name": _lastNameController.text[0]
+                                    .trim()
+                                    .toUpperCase() +
+                                _lastNameController.text.trim().substring(1),
+                            "email": _emailController.text.trim(),
                             "sexo": sexo == 0 ? "Masculino" : "Feminino",
-                            "phone_number": _countryIdController.text +
-                                _dddIdController.text +
-                                _numberController.text,
+                            "phone_number": _countryIdController.text.trim() +
+                                _dddIdController.text.trim() +
+                                _numberController.text.trim(),
                             "payApp": false,
                             "personal_type":
                                 personal == 0 ? true : false, //personal_type
                             "photoURL":
-                                "https://firebasestorage.googleapis.com/v0/b/my-training-a9cfa.appspot.com/o/perfil_photosURL%2Fblank-profile-picture-973460_640.png?alt=media&token=8f8d9de4-6e9b-4d75-9726-dc39c581ba3a",
+                                "https://firebasestorage.googleapis.com/v0/b/treino-facil-22856.appspot.com/o/perfil_photosURL%2Fblank-profile-picture.png?alt=media&token=698f7a33-6170-4c8d-b0b6-d65ffe052010"
                           };
                           model.singUp(
                               userData: userData,
                               pass: _passController.text,
                               onSucess: _onSucess,
-                              onFailed: _onFailed);
+                              onFailed: _onFailed,
+                              newImage: _image2);
                         }
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.7,
-                        height: 60,
+                        height: 120,
                         child: Center(
                           child: Text(
                             "Registre-se",
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 25),
+                                fontWeight: FontWeight.bold, fontSize: 38),
                           ),
                         ),
                         decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(color: Colors.amber, width: 1),
                             boxShadow: [
                               BoxShadow(
                                   color: Colors.black.withOpacity(0.2),

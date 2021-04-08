@@ -1,8 +1,10 @@
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MyAccount extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -21,8 +23,10 @@ class _MyAccountState extends State<MyAccount> {
   final _emailController = TextEditingController();
   final _numberController = TextEditingController();
   final _passController = TextEditingController();
+  String _image;
   bool _obscureTextPass = true;
   int _passLenght = 0;
+  bool isLoading = false;
 
   //authUser
   //FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,10 +39,27 @@ class _MyAccountState extends State<MyAccount> {
   void initState() {
     super.initState();
 
+    _image = userData["photoURL"];
     _nameController.text = userData["name"];
     _lastNameController.text = userData["last_name"];
     _emailController.text = userData["email"];
     _numberController.text = userData["number"];
+  }
+
+  File _image2;
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    // ignore: deprecated_member_use
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
+    setState(() {
+      if (pickedFile != null) {
+        _image2 = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -62,7 +83,7 @@ class _MyAccountState extends State<MyAccount> {
         backgroundColor: Color(0xff313131),
         body:
             ScopedModelDescendant<UserModel>(builder: (context, child, model) {
-          if (model.userData["name"] == null)
+          if (model.userData["name"] == null || isLoading)
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -72,23 +93,49 @@ class _MyAccountState extends State<MyAccount> {
                 physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.only(top: 30, left: 40, right: 40),
                 children: [
-                  Container(
-                    height: 130,
-                    width: 120,
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.contain,
-                          image: NetworkImage(model.userData["photoURL"])),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 10,
-                          offset: Offset(0, 6), // changes position of shadow
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: new BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset:
+                                    Offset(0, 4), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: _image2 == null
+                              ? Image.network(
+                                  _image,
+                                  fit: BoxFit.fitWidth,
+                                )
+                              : Image.file(
+                                  _image2,
+                                  fit: BoxFit.fitWidth,
+                                ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        top: 1,
+                        right: 1,
+                        child: IconButton(
+                            icon: Icon(
+                              Icons.image_search,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              getImage();
+                            }),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 30,
@@ -274,6 +321,10 @@ class _MyAccountState extends State<MyAccount> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      print(_image2);
+                      setState(() {
+                        isLoading = true;
+                      });
                       if (_formKey.currentState.validate()) {}
                       //Navigator.pop(context);
                       //CONFIRMAÇÃO E FUNÇÃO DE SALVAR NOVOS ATUALIZAÇÃO DE PERFIL
@@ -282,15 +333,38 @@ class _MyAccountState extends State<MyAccount> {
                         "last_name": _lastNameController.text,
                         "email": _emailController.text,
                         "phone": _numberController.text,
-                        "photoURL": model.userData["photoURL"],
+                        "photoURL": userData["photoURL"],
                         "password": _passController.text
                       };
-                      model.changeUserInfos(newUserData: newUserData).then(
-                          (value) => Navigator.pushAndRemoveUntil(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (BuildContext context) => HomeTab()),
-                              (Route<dynamic> route) => false));
+                      model
+                          .changeUserInfos(
+                              newUserData: newUserData, newImage: _image2)
+                          .then((value) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (BuildContext context) => HomeTab()),
+                            (Route<dynamic> route) => false);
+                      }).catchError((onError) {
+                        print(onError);
+                        setState(() {
+                          isLoading = false;
+                        });
+                        // ignore: deprecated_member_use
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                          padding: EdgeInsets.only(bottom: 60),
+                          content: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text("Erro ao atualizar perfil",
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ));
+                      });
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -303,7 +377,7 @@ class _MyAccountState extends State<MyAccount> {
                         ),
                       ),
                       decoration: BoxDecoration(
-                          color: _passLenght > 8
+                          color: _passLenght >= 8
                               ? Theme.of(context).primaryColor
                               : Colors.grey[500],
                           borderRadius: BorderRadius.all(Radius.circular(10)),

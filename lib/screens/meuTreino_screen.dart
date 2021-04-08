@@ -77,7 +77,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
                 ),
                 onPressed: () async {
                   await idTreino.delete().then((value) {
-                    print("Apagado com sucesso");
                     Navigator.pushAndRemoveUntil(
                         context,
                         new MaterialPageRoute(
@@ -193,6 +192,7 @@ class _TreinoScreenState extends State<TreinoScreen> {
                       backgroundColor: Colors.green,
                       duration: Duration(seconds: 2),
                     ));
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   }).catchError((e) {
                     // ignore: deprecated_member_use
@@ -365,59 +365,78 @@ class _TreinoScreenState extends State<TreinoScreen> {
   }
 
   Future<void> _displayExerciseModalBottom(
-      BuildContext context, String exerciseVideo) async {
+      BuildContext context, String exerciseVideo, String obs) async {
     return showModalBottomSheet(
         backgroundColor: Colors.grey[850],
         context: context,
         builder: (context) {
           return Container(
-            margin: const EdgeInsets.symmetric(vertical: 15),
+            margin: const EdgeInsets.symmetric(vertical: 10),
             height: 500,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 70),
-              child: AspectRatio(
-                aspectRatio: 0.5,
-                child: Image.network(exerciseVideo, loadingBuilder:
-                    (BuildContext context, Widget child,
-                        ImageChunkEvent loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
+              padding: const EdgeInsets.only(bottom: 60),
+              child: ListView(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.3,
+                    child: Image.network(exerciseVideo, loadingBuilder:
+                        (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+                      return Center(
+                          child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            "Carregando exercício: ",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontFamily: "Gotham"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Carregando exercício: ",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontFamily: "Gotham"),
+                              ),
+                              Text(
+                                "${_calculateProgress(loadingProgress)}%",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.amber,
+                                    fontSize: 20,
+                                    fontFamily: "Gotham"),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "${_calculateProgress(loadingProgress)}%",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.amber,
-                                fontSize: 20,
-                                fontFamily: "Gotham"),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40),
+                            child: LinearProgressIndicator(),
                           ),
                         ],
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: LinearProgressIndicator(),
-                      ),
-                    ],
-                  ));
-                }, fit: BoxFit.contain),
+                      ));
+                    }, fit: BoxFit.contain),
+                  ),
+                  Divider(
+                    thickness: 1.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                        child: AutoSizeText("Observação:\n" + obs,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                height: 1.1,
+                                color: Colors.white,
+                                fontFamily: "GothamBook",
+                                fontSize: 18))),
+                  ),
+                  SizedBox(height: 22),
+                ],
               ),
             ),
           );
@@ -431,6 +450,7 @@ class _TreinoScreenState extends State<TreinoScreen> {
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
         foregroundColor: Colors.white,
+        elevation: 5,
         backgroundColor: Colors.grey[700],
         overlayColor: Colors.grey[850],
         marginBottom: 70,
@@ -445,8 +465,9 @@ class _TreinoScreenState extends State<TreinoScreen> {
             onTap: () async {
               planLenght = await _lenghtExe();
               Navigator.of(context).push(MaterialPageRoute(
+                  settings: RouteSettings(name: "/musculos"),
                   builder: (context) => MuscleListScreen(
-                      true, 0, treinoId, null, planLenght, authId)));
+                      true, 0, treinoId, null, planLenght, authId, title)));
             },
           ),
           SpeedDialChild(
@@ -457,8 +478,9 @@ class _TreinoScreenState extends State<TreinoScreen> {
             onTap: () async {
               planLenght = await _lenghtExe();
               Navigator.of(context).push(MaterialPageRoute(
+                  settings: RouteSettings(name: "/musculos"),
                   builder: (context) => MuscleListScreen(
-                      true, 1, treinoId, null, planLenght, authId)));
+                      true, 1, treinoId, null, planLenght, authId, title)));
             },
           ),
         ],
@@ -509,7 +531,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
         builder: (context, snapshot) {
           var doc = snapshot.data;
           if (doc == null) return Center(child: CircularProgressIndicator());
-          print("${doc.docs.length} tamanho");
           if (!snapshot.hasData)
             return Center(
               child: CircularProgressIndicator(),
@@ -614,8 +635,10 @@ class _TreinoScreenState extends State<TreinoScreen> {
                               snapshot.data.docs[index]["set_type"] != "biset"
                                   ? InkWell(
                                       onTap: () {
-                                        _displayExerciseModalBottom(context,
-                                            snapshot.data.docs[index]["video"]);
+                                        _displayExerciseModalBottom(
+                                            context,
+                                            snapshot.data.docs[index]["video"],
+                                            snapshot.data.docs[index]["obs"]);
                                       },
                                       splashColor: Colors.grey[900],
                                       borderRadius: const BorderRadius.all(
@@ -654,20 +677,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                               )
                                             : Stack(
                                                 children: [
-                                                  Positioned(
-                                                      left: 5,
-                                                      child: IconButton(
-                                                          icon: Icon(
-                                                            Icons
-                                                                .remove_red_eye,
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.6),
-                                                          ),
-                                                          iconSize: 20,
-                                                          onPressed: () {
-                                                            //mostrar observação do exercício
-                                                          })),
                                                   Positioned(
                                                       right: -5,
                                                       child: IconButton(
@@ -832,7 +841,8 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                                 .then((snapshot) {
                                               _displayExerciseModalBottom(
                                                   context,
-                                                  snapshot.docs[1]["video"]);
+                                                  snapshot.docs[1]["video"],
+                                                  snapshot.docs[1]["obs"]);
                                             });
                                           },
                                           radius: 20,
@@ -876,23 +886,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                                   )
                                                 : Stack(
                                                     children: [
-                                                      Positioned(
-                                                          top: -15,
-                                                          left: -15,
-                                                          child: IconButton(
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                              ),
-                                                              splashRadius: 20,
-                                                              iconSize: 15,
-                                                              onPressed: () {
-                                                                //mostrar observação do exercício
-                                                              })),
                                                       Positioned(
                                                           top: -15,
                                                           right: -15,
@@ -985,7 +978,8 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                                 .then((snapshot) {
                                               _displayExerciseModalBottom(
                                                   context,
-                                                  snapshot.docs[0]["video"]);
+                                                  snapshot.docs[0]["video"],
+                                                  snapshot.docs[0]["obs"]);
                                             });
                                           },
                                           radius: 20,
@@ -1029,23 +1023,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                                   )
                                                 : Stack(
                                                     children: [
-                                                      Positioned(
-                                                          top: -15,
-                                                          left: -15,
-                                                          child: IconButton(
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                              ),
-                                                              splashRadius: 20,
-                                                              iconSize: 15,
-                                                              onPressed: () {
-                                                                //mostrar observação do exercício
-                                                              })),
                                                       Positioned(
                                                           top: -15,
                                                           right: -15,

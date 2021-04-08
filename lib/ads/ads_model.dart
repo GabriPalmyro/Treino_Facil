@@ -2,19 +2,18 @@ import 'dart:io';
 import 'package:firebase_admob/firebase_admob.dart';
 
 final bannerAdIdAndroid =
-    "ca-app-pub-3940256099942544/6300978111"; //myID ca-app-pub-7831186229252322/6549223566
+    "ca-app-pub-7831186229252322/6549223566"; //myID ca-app-pub-3940256099942544/6300978111
 final intertstitialAdIdAndroid =
-    "ca-app-pub-3940256099942544/1033173712"; //myId ca-app-pub-7831186229252322/7884973074
+    "ca-app-pub-7831186229252322/7884973074"; //myId ca-app-pub-7831186229252322/7884973074
 final rewardedVideoAdIdAndroid =
-    "ca-app-pub-3940256099942544/5224354917"; //myId ca-app-pub-7831186229252322/3632888368
+    "ca-app-pub-7831186229252322/3632888368"; //myId ca-app-pub-7831186229252322/3632888368
 final nativeAdIdAndroid =
-    "ca-app-pub-3940256099942544/2247696110"; //"ca-app-pub-7831186229252322/8542072878"
+    "ca-app-pub-7831186229252322/8542072878"; //"ca-app-pub-7831186229252322/8542072878"
 
 MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   keywords: <String>["gym", "academia", "treino", "musculação", "bodybuilding"],
   contentUrl: 'https://flutter.io',
   childDirected: false,
-  testDevices: <String>[],
 );
 
 BannerAd myBanner;
@@ -66,7 +65,7 @@ String nativeAdUnitId() {
 void startBanner() {
   myBanner = BannerAd(
     adUnitId: bannerAdIdAndroid,
-    size: AdSize.fullBanner,
+    size: AdSize.smartBanner,
     targetingInfo: targetingInfo,
     listener: (MobileAdEvent event) {
       if (event == MobileAdEvent.opened) {
@@ -80,6 +79,7 @@ void startBanner() {
         // MobileAdEvent.leftApplication
       } else if (event == MobileAdEvent.failedToLoad) {
         print("FAILED TO LOAD SAPORRA");
+        return "Failed to load";
       }
       print("BannerAd event is $event");
     },
@@ -109,7 +109,15 @@ BannerAd getBanner(AdSize size) {
 InterstitialAd buildInterstitial() {
   return InterstitialAd(
       adUnitId: intertstitialAdIdAndroid,
-      targetingInfo: MobileAdTargetingInfo(testDevices: <String>[]),
+      targetingInfo: MobileAdTargetingInfo(
+        keywords: <String>[
+          "gym",
+          "academia",
+          "treino",
+          "musculação",
+          "bodybuilding"
+        ],
+      ),
       listener: (MobileAdEvent event) {
         if (event == MobileAdEvent.loaded) {
           myInterstitial?.show();

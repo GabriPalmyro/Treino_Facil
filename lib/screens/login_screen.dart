@@ -256,10 +256,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor,
                                   fontFamily: "GothamBold",
-                                  fontSize: 30),
+                                  fontSize: 38),
                             )),
                         SizedBox(height: 30),
-                        GestureDetector(
+                        /*GestureDetector(
                           onTap: () {},
                           child: Container(
                             width: MediaQuery.of(context).size.width * 0.7,
@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       offset: Offset(0, 4))
                                 ]),
                           ),
-                        ),
+                        ),*/
                         SizedBox(height: 100)
                       ],
                     )

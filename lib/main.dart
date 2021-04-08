@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
       }).catchError((_) {
         print("ERRO $_");
       });
-  }
+  } 
 
   @override
   void dispose() {

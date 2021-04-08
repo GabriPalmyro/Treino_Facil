@@ -1,12 +1,18 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/meuTreino_screen.dart';
 import 'package:tabela_treino/models/user_model.dart';
-import 'package:tabela_treino/transition/transitions.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
+
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_controller.dart';
+
+import 'dart:async';
 
 // ignore: must_be_immutable
 class PlanilhaScreen extends StatefulWidget {
@@ -362,6 +368,48 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
   //rewardedAd
   bool isRewardedReady = false;
 
+  //nativa BANNER SCRIPT
+  AdmobBanner _admobBanner;
+  final _nativeAdController = NativeAdmobController();
+  StreamSubscription _subscription;
+
+  @override
+  void initState() {
+    _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
+    super.initState();
+
+    _admobBanner = AdmobBanner(
+      adUnitId: bannerAdUnitId(),
+      adSize: AdmobBannerSize.BANNER,
+      listener: (e, e2) {
+        if (e == AdmobAdEvent.loaded) {}
+        if (e == AdmobAdEvent.closed) {
+          _admobBanner = null;
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    _nativeAdController.dispose();
+    super.dispose();
+  }
+
+  void _onStateChanged(AdLoadState state) {
+    switch (state) {
+      case AdLoadState.loading:
+        break;
+
+      case AdLoadState.loadCompleted:
+        break;
+
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
@@ -423,95 +471,112 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
               );
             else {
               return SafeArea(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.all(5),
-                    itemCount: snapshot.data.docs.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          print("${snapshot.data.docs[index].id}");
-                          Navigator.push(
-                              context,
-                              SlideLeftRoute(
-                                  page: TreinoScreen(
+                child: Column(
+                  children: [
+                    ListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        padding: EdgeInsets.all(5),
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  settings: RouteSettings(name: "/treino"),
+                                  builder: (context) => TreinoScreen(
                                       snapshot.data.docs[index]["title"],
                                       snapshot.data.docs[index].id,
                                       authId)));
-                        },
-                        child: Stack(
-                          children: [
-                            Column(
+                            },
+                            child: Stack(
                               children: [
-                                Container(
-                                  margin: EdgeInsets.all(10),
-                                  height: 130,
-                                  decoration: BoxDecoration(
-                                    borderRadius: new BorderRadius.all(
-                                        new Radius.circular(30.0)),
-                                    color: Theme.of(context).primaryColor,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.4),
-                                        spreadRadius: 3,
-                                        blurRadius: 7,
-                                        offset: Offset(
-                                            2, 5), // changes position of shadow
+                                Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(10),
+                                      height: 130,
+                                      decoration: BoxDecoration(
+                                        borderRadius: new BorderRadius.all(
+                                            new Radius.circular(30.0)),
+                                        color: Theme.of(context).primaryColor,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.4),
+                                            spreadRadius: 3,
+                                            blurRadius: 7,
+                                            offset: Offset(2,
+                                                5), // changes position of shadow
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  child: Container(
-                                    margin:
-                                        EdgeInsets.only(left: 10, right: 10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          snapshot.data.docs[index]["title"]
-                                              .toString()
-                                              .toUpperCase(),
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              fontFamily: "GothamBold"),
-                                          textAlign: TextAlign.center,
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            left: 10, right: 10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              snapshot.data.docs[index]["title"]
+                                                  .toString()
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                  fontSize: 25,
+                                                  fontFamily: "GothamBold"),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Divider(),
+                                            Text(
+                                              snapshot.data.docs[index]
+                                                  ["description"],
+                                              style: TextStyle(
+                                                  fontSize: 22,
+                                                  fontFamily: "GothamBook"),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
                                         ),
-                                        Divider(),
-                                        Text(
-                                          snapshot.data.docs[index]
-                                              ["description"],
-                                          style: TextStyle(
-                                              fontSize: 22,
-                                              fontFamily: "GothamBook"),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
+                                Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: IconButton(
+                                        icon: Icon(
+                                          Icons.edit_outlined,
+                                          color: Colors.black.withOpacity(0.8),
+                                        ),
+                                        splashRadius: 1,
+                                        iconSize: 20,
+                                        onPressed: () {
+                                          _displayEditModalBottom(context,
+                                              snapshot.data.docs[index]);
+                                        })),
                               ],
                             ),
-                            Positioned(
-                                top: 10,
-                                right: 10,
-                                child: IconButton(
-                                    icon: Icon(
-                                      Icons.edit_outlined,
-                                      color: Colors.black.withOpacity(0.8),
-                                    ),
-                                    splashRadius: 1,
-                                    iconSize: 20,
-                                    onPressed: () {
-                                      _displayEditModalBottom(
-                                          context, snapshot.data.docs[index]);
-                                    })),
-                          ],
-                        ),
-                      );
-                    }),
+                          );
+                        }),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 80,
+                      child: NativeAdmob(
+                        adUnitID: nativeAdUnitId(),
+                        loading: Container(),
+                        error: Text("Failed to load the ad"),
+                        controller: _nativeAdController,
+                        type: NativeAdmobType.banner,
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
           },

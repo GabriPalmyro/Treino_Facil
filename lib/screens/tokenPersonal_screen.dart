@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/tabs/planilha_tab.dart';
+import 'package:tabela_treino/widgets/custom_drawer.dart';
 
 // ignore: must_be_immutable
 class TokenPersonalScreen extends StatefulWidget {
@@ -94,10 +95,11 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
+        drawer: CustomDrawer(3),
         appBar: AppBar(
           title: Text(
-            "Seus Alunos",
-            style: TextStyle(fontFamily: "GothamBold", fontSize: 20),
+            "Meus Alunos",
+            style: TextStyle(fontFamily: "GothamBold", fontSize: 24),
           ),
           centerTitle: true,
         ),
@@ -164,7 +166,8 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                                 return Column(
                                   children: [
                                     Container(
-                                      margin: EdgeInsets.all(5),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
                                       child: Container(
                                         child: Column(
                                           children: [
@@ -177,8 +180,8 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                                                   borderRadius:
                                                       BorderRadius.circular(50),
                                                   child: Container(
-                                                    height: 35,
-                                                    width: 35,
+                                                    height: 45,
+                                                    width: 45,
                                                     decoration:
                                                         new BoxDecoration(
                                                       boxShadow: [
@@ -243,7 +246,10 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                                                     onPressed: () {
                                                       print(
                                                           "${snapshot.data.docs[index]["client_Id"]}");
-                                                      Navigator.of(context).push(MaterialPageRoute(
+                                                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                                          settings: RouteSettings(
+                                                              name:
+                                                                  "/planilhas"),
                                                           builder: (context) => PlanilhaScreen(
                                                               snapshot.data
                                                                           .docs[

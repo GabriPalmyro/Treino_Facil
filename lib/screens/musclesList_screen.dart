@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/exerciseDetail_screen.dart';
-import 'package:tabela_treino/transition/transitions.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
@@ -14,16 +13,16 @@ import 'package:flutter_native_admob/native_admob_controller.dart';
 class MuscleListScreen extends StatefulWidget {
   final String authId;
   final String treinoId;
-
+  final String title;
   final String exeId;
   final bool addMode;
   final int set;
   final int qntdExe;
   MuscleListScreen(this.addMode, this.set, this.treinoId, this.exeId,
-      this.qntdExe, this.authId);
+      this.qntdExe, this.authId, this.title);
   @override
-  _MuscleListScreenState createState() =>
-      _MuscleListScreenState(addMode, set, treinoId, exeId, qntdExe, authId);
+  _MuscleListScreenState createState() => _MuscleListScreenState(
+      addMode, set, treinoId, exeId, qntdExe, authId, title);
 }
 
 class _MuscleListScreenState extends State<MuscleListScreen> {
@@ -33,8 +32,9 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
   final String treinoId;
   final String exeId;
   final int qntdExe;
+  final String title;
   _MuscleListScreenState(this.addMode, this.set, this.treinoId, this.exeId,
-      this.qntdExe, this.authId);
+      this.qntdExe, this.authId, this.title);
 
   //container animado controles
   double _containerHeight = 0;
@@ -371,6 +371,7 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                     maxLines: 2,
                   ),
             actions: _buildActions(),
+            leading: (addMode && exeId != null) ? Container() : null,
             centerTitle: true,
           ),
           backgroundColor: Color(0xff313131),
@@ -429,17 +430,18 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                   _containerMargin = 0;
                                 });
                                 if (addMode) {
-                                  Navigator.push(
-                                      context,
-                                      SlideLeftRoute(
-                                          page: ExerciseDetail(
-                                              _resultList[index],
-                                              set,
-                                              addMode,
-                                              qntdExe,
-                                              treinoId,
-                                              exeId,
-                                              authId)));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      settings:
+                                          RouteSettings(name: "/adicionar"),
+                                      builder: (context) => ExerciseDetail(
+                                          _resultList[index],
+                                          set,
+                                          addMode,
+                                          qntdExe,
+                                          treinoId,
+                                          exeId,
+                                          authId,
+                                          title)));
                                 } else {
                                   if (_isInterstitialAdReady && adClick >= 2) {
                                     interstitialAdMuscle.show();
@@ -533,27 +535,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                           ],
                         );
                       })),
-              /*
-                    return GestureDetector(
-                      onTap: () {
-                        //arrumar addmode comentado
-                        print(adClick);
-                        /*if (addMode == true) {
-                          if (adClick < 1) {
-                            adClick++;
-                            interstitialAdMuscle = buildInterstitial(title)
-                              ..load()
-                              ..show();
-                          }
-                        } else {*/
-                        Navigator.push(
-                            context,
-                            SlideLeftRoute(
-                                page: MuscleScreen(
-                                    title, addMode, treinoId, qntdExe)));
-                        //}
-                      },
-                      */
             ],
           )),
     );

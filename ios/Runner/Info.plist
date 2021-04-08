@@ -7,7 +7,7 @@
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<string>br.com.palmyro.treino_facil</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
@@ -46,6 +46,15 @@
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-7831186229252322~9095625736</string>
 		<key>io.flutter.embedded_views_preview</key> <true/>
+		
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Need to upload image</string>
+
+		<key>NSCameraUsageDescription</key>
+		<string>Need to upload image</string>
+
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Need to upload image</string>
 
 		<key>NSUserTrackingUsageDescription</key>
 		<string>This identifier will be used to deliver personalized ads to you.</string>
