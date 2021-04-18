@@ -48,8 +48,8 @@ def keystoreProperties = new Properties()
         applicationId "br.com.palmyro.treino_facil"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.0.2"
+        versionCode 7
+        versionName "1.1.0"
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -65,10 +65,20 @@ def keystoreProperties = new Properties()
    }
    buildTypes {
        release {
+            profile {
+                matchingFallbacks = ['debug', 'release']
+            }
+           
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
        }
    }
-
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
 }
 
 flutter {

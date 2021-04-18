@@ -10,9 +10,11 @@ import 'package:tabela_treino/tabs/planilha_tab.dart';
 import 'package:tabela_treino/tabs/profile_tab.dart';
 import 'package:tabela_treino/transition/transitions.dart';
 
+// ignore: must_be_immutable
 class CustomDrawer extends StatelessWidget {
+  final double padding;
   final int pageNow;
-  CustomDrawer(this.pageNow);
+  CustomDrawer(this.pageNow, this.padding);
 
   bool isLoading = false;
 
@@ -59,7 +61,8 @@ class CustomDrawer extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       new MaterialPageRoute(
-                          builder: (BuildContext context) => LoginScreen()),
+                          builder: (BuildContext context) =>
+                              LoginScreen(padding)),
                       (Route<dynamic> route) => false);
                   isLoading = false;
                 },
@@ -85,8 +88,8 @@ class CustomDrawer extends StatelessWidget {
                       ? GestureDetector(
                           onTap: () {
                             if (pageNow != 4) {
-                              Navigator.push(
-                                  context, SlideLeftRoute(page: ProfileTab()));
+                              Navigator.push(context,
+                                  SlideLeftRoute(page: ProfileTab(padding)));
                               print("perfil");
                             } else {
                               Navigator.pop(context);
@@ -207,7 +210,7 @@ class CustomDrawer extends StatelessWidget {
                           if (pageNow != 0) {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeTab()));
+                                    builder: (context) => HomeTab(padding)));
                             print("home");
                           } else {
                             Navigator.pop(context);
@@ -248,7 +251,8 @@ class CustomDrawer extends StatelessWidget {
                                     settings: RouteSettings(name: "/planilhas"),
                                     builder: (context) => PlanilhaScreen(
                                         model.firebaseUser.uid,
-                                        model.userData["name"])));
+                                        model.userData["name"],
+                                        padding)));
                           } else {
                             Navigator.pop(context);
                           }
@@ -292,7 +296,8 @@ class CustomDrawer extends StatelessWidget {
                                         null,
                                         0,
                                         model.firebaseUser.uid,
-                                        null)));
+                                        null,
+                                        padding)));
                             print("musculos");
                           } else {
                             Navigator.pop(context);
@@ -331,10 +336,11 @@ class CustomDrawer extends StatelessWidget {
                             if (model.userData["personal_type"]) {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      TokenPersonalScreen(model)));
+                                      TokenPersonalScreen(model, padding)));
                             } else {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => TokenScreen(model)));
+                                  builder: (context) =>
+                                      TokenScreen(model, padding)));
                             }
                             print("personal");
                           } else {
@@ -375,8 +381,8 @@ class CustomDrawer extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           if (pageNow != 4) {
-                            Navigator.push(
-                                context, SlideLeftRoute(page: ProfileTab()));
+                            Navigator.push(context,
+                                SlideLeftRoute(page: ProfileTab(padding)));
                             print("perfil");
                           } else {
                             Navigator.pop(context);

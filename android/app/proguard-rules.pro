@@ -6,3 +6,9 @@
 -keep class io.flutter.plugins.** { *; }
 -keep class com.google.firebase.** { *; }
 -keep class com.shatsy.** { *; }
+-keep class androidx.lifecycle.** { *; } 
+-keep @interface com.google.gson.annotations.SerializedName
+-keep @interface com.google.gson.annotations.Expose
+-keepattributes *Annotation*
+ #https://github.com/flutter/flutter/issues/58479
+ #https://medium.com/@swav.kulinski/flutter-and-android-obfuscation-8768ac544421

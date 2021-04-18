@@ -15,11 +15,17 @@ import 'dart:async';
 
 // ignore: must_be_immutable
 class HomeTab extends StatefulWidget {
+  final double padding;
+  HomeTab(this.padding);
   @override
-  _HomeTabState createState() => _HomeTabState();
+  _HomeTabState createState() => _HomeTabState(padding);
 }
 
 class _HomeTabState extends State<HomeTab> {
+  final double padding;
+  _HomeTabState(this.padding);
+
+  // ignore: unused_field
   AdmobBanner _admobBanner;
 
   double _height = 0;
@@ -32,11 +38,14 @@ class _HomeTabState extends State<HomeTab> {
     _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
     super.initState();
 
+    print(padding.toString() + " home tab pad");
     _admobBanner = AdmobBanner(
       adUnitId: bannerAdUnitId(),
       adSize: AdmobBannerSize.BANNER,
       listener: (e, e2) {
-        if (e == AdmobAdEvent.loaded) {}
+        if (e == AdmobAdEvent.loaded) {
+          print("padding home tab 2 = loaded");
+        }
         if (e == AdmobAdEvent.closed) {
           _admobBanner = null;
         }
@@ -96,72 +105,147 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
         );
-      return Scaffold(
-          drawer: CustomDrawer(0),
-          appBar: AppBar(
-            toolbarHeight: 70,
-            shadowColor: Colors.grey[850],
-            elevation: 25,
-            centerTitle: true,
-            title: Text(
-              "Treino Fácil",
-              style: TextStyle(
-                  color: Colors.grey[850],
-                  fontFamily: "GothamBold",
-                  fontSize: 30),
+      return Padding(
+        padding: EdgeInsets.only(bottom: padding),
+        child: Scaffold(
+            drawer: CustomDrawer(0, padding),
+            appBar: AppBar(
+              toolbarHeight: 70,
+              shadowColor: Colors.grey[850],
+              elevation: 25,
+              centerTitle: true,
+              title: Text(
+                "Treino Fácil",
+                style: TextStyle(
+                    color: Colors.grey[850],
+                    fontFamily: "GothamBold",
+                    fontSize: 30),
+              ),
+              backgroundColor: Theme.of(context).primaryColor,
             ),
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          backgroundColor: const Color(0xff313131),
-          body: ListView(
-            physics: BouncingScrollPhysics(),
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      padding: const EdgeInsets.only(top: 30),
-                      margin: const EdgeInsets.only(left: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            backgroundColor: const Color(0xff313131),
+            body: ListView(
+              physics: BouncingScrollPhysics(),
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.only(top: 30),
+                        margin: const EdgeInsets.only(left: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Olá, ${model.userData["name"][0].toUpperCase() + model.userData["name"].substring(1)}",
+                                  style: TextStyle(
+                                      fontFamily: "GothamBold",
+                                      fontSize: 33,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                Text(
+                                  "Vamos treinar?",
+                                  style: TextStyle(
+                                      fontFamily: "GothamThin",
+                                      fontSize: 22,
+                                      color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )),
+                  ],
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MuscleListScreen(false, 0, null,
+                            null, 0, model.firebaseUser.uid, null, padding)));
+                  },
+                  child: Container(
+                      alignment: Alignment.topLeft,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.only(top: 15, left: 20),
+                      height: 130,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            new BorderRadius.all(new Radius.circular(30.0)),
+                        color: Theme.of(context).primaryColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.4),
+                            spreadRadius: 3,
+                            blurRadius: 7,
+                            offset: Offset(2, 5), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Olá, ${model.userData["name"][0].toUpperCase() + model.userData["name"].substring(1)}",
-                                style: TextStyle(
-                                    fontFamily: "GothamBold",
-                                    fontSize: 33,
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                              Text(
-                                "Vamos treinar?",
-                                style: TextStyle(
-                                    fontFamily: "GothamThin",
-                                    fontSize: 22,
-                                    color: Colors.white),
-                              ),
-                            ],
+                          AutoSizeText(
+                            "Biblioteca de exercícios",
+                            style: TextStyle(
+                                color: Colors.grey[900],
+                                fontFamily: "GothamBold",
+                                fontStyle: FontStyle.italic,
+                                fontSize: 25),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          AutoSizeText(
+                            "Veja a execução e os movimentos da nossa lista de exercícios",
+                            maxLines: 3,
+                            style: TextStyle(
+                                color: Colors.grey[900],
+                                fontFamily: "Gotham",
+                                fontStyle: FontStyle.italic,
+                                fontSize: 20),
                           ),
                         ],
                       )),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MuscleListScreen(false, 0, null,
-                          null, 0, model.firebaseUser.uid, null)));
-                },
-                child: Container(
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  height: _height,
+                  child: NativeAdmob(
+                    adUnitID: nativeAdUnitId(),
+                    loading: Container(),
+                    error: Text("Failed to load the ad"),
+                    controller: _nativeAdController,
+                    type: NativeAdmobType.banner,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (model.userData["personal_type"]) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              TokenPersonalScreen(model, padding)));
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => TokenScreen(model, padding)));
+                    }
+                  },
+                  child: Container(
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.only(top: 15, left: 20),
-                    height: 130,
+                    padding:
+                        const EdgeInsets.only(top: 15, left: 20, right: 10),
+                    height: 150,
                     decoration: BoxDecoration(
                       borderRadius:
                           new BorderRadius.all(new Radius.circular(30.0)),
@@ -175,135 +259,65 @@ class _HomeTabState extends State<HomeTab> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AutoSizeText(
-                          "Biblioteca de exercícios",
-                          style: TextStyle(
-                              color: Colors.grey[900],
-                              fontFamily: "GothamBold",
-                              fontStyle: FontStyle.italic,
-                              fontSize: 25),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        AutoSizeText(
-                          "Veja a execução e os movimentos da nossa lista de exercícios",
-                          maxLines: 3,
-                          style: TextStyle(
-                              color: Colors.grey[900],
-                              fontFamily: "Gotham",
-                              fontStyle: FontStyle.italic,
-                              fontSize: 20),
-                        ),
-                      ],
-                    )),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                height: _height,
-                child: NativeAdmob(
-                  adUnitID: nativeAdUnitId(),
-                  loading: Container(),
-                  error: Text("Failed to load the ad"),
-                  controller: _nativeAdController,
-                  type: NativeAdmobType.banner,
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (model.userData["personal_type"]) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => TokenPersonalScreen(model)));
-                  } else {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => TokenScreen(model)));
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.only(top: 15, left: 20, right: 10),
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        new BorderRadius.all(new Radius.circular(30.0)),
-                    color: Theme.of(context).primaryColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
-                        spreadRadius: 3,
-                        blurRadius: 7,
-                        offset: Offset(2, 5), // changes position of shadow
-                      ),
-                    ],
+                    child: !model.userData["personal_type"]
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Meu Personal Trainer",
+                                style: TextStyle(
+                                    color: Colors.grey[900],
+                                    fontFamily: "GothamBold",
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 25),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              AutoSizeText(
+                                "Veja pedidos de conexão ou corte conexão com seu Personal Trainer",
+                                maxLines: 3,
+                                style: TextStyle(
+                                    color: Colors.grey[900],
+                                    fontFamily: "Gotham",
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 20),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Controle de alunos",
+                                style: TextStyle(
+                                    color: Colors.grey[900],
+                                    fontFamily: "GothamBold",
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 25),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              AutoSizeText(
+                                "Adicione, remova ou edite a planilha de seus alunos",
+                                maxLines: 3,
+                                style: TextStyle(
+                                    color: Colors.grey[900],
+                                    fontFamily: "Gotham",
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 22),
+                              ),
+                            ],
+                          ),
                   ),
-                  child: !model.userData["personal_type"]
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Meu Personal Trainer",
-                              style: TextStyle(
-                                  color: Colors.grey[900],
-                                  fontFamily: "GothamBold",
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 25),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            AutoSizeText(
-                              "Veja pedidos de conexão ou corte conexão com seu Personal Trainer",
-                              maxLines: 3,
-                              style: TextStyle(
-                                  color: Colors.grey[900],
-                                  fontFamily: "Gotham",
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 20),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Controle de alunos",
-                              style: TextStyle(
-                                  color: Colors.grey[900],
-                                  fontFamily: "GothamBold",
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 25),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            AutoSizeText(
-                              "Adicione, remova ou edite a planilha de seus alunos",
-                              maxLines: 3,
-                              style: TextStyle(
-                                  color: Colors.grey[900],
-                                  fontFamily: "Gotham",
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 22),
-                            ),
-                          ],
-                        ),
                 ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-            ],
-          ));
+                SizedBox(
+                  height: 30,
+                ),
+              ],
+            )),
+      );
     });
   }
 }

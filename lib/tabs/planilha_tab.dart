@@ -16,17 +16,20 @@ import 'dart:async';
 
 // ignore: must_be_immutable
 class PlanilhaScreen extends StatefulWidget {
-  String authId;
-  String name;
-  PlanilhaScreen(this.authId, this.name);
+  final double padding;
+  final String authId;
+  final String name;
+  PlanilhaScreen(this.authId, this.name, this.padding);
   @override
-  _PlanilhaScreenState createState() => _PlanilhaScreenState(authId, name);
+  _PlanilhaScreenState createState() =>
+      _PlanilhaScreenState(authId, name, padding);
 }
 
 class _PlanilhaScreenState extends State<PlanilhaScreen> {
+  final double padding;
   String authId;
   String name;
-  _PlanilhaScreenState(this.authId, this.name);
+  _PlanilhaScreenState(this.authId, this.name, this.padding);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _titleController = TextEditingController();
@@ -369,6 +372,7 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
   bool isRewardedReady = false;
 
   //nativa BANNER SCRIPT
+  // ignore: unused_field
   AdmobBanner _admobBanner;
   final _nativeAdController = NativeAdmobController();
   StreamSubscription _subscription;
@@ -417,169 +421,199 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
         return Center(
           child: CircularProgressIndicator(),
         );
-      return Scaffold(
-        key: _scaffoldKey,
-        drawer: authId != _auth.currentUser.uid ? null : CustomDrawer(1),
-        appBar: AppBar(
-          toolbarHeight: 70,
-          shadowColor: Colors.grey[850],
-          elevation: 25,
-          centerTitle: true,
-          title: AutoSizeText(
-            authId == _auth.currentUser.uid
-                ? "Planilhas"
-                : "Planilhas de $name",
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.grey[850],
-                fontFamily: "GothamBold",
-                fontSize: authId == _auth.currentUser.uid ? 30 : 20),
+      return Padding(
+        padding: EdgeInsets.only(bottom: padding),
+        child: Scaffold(
+          key: _scaffoldKey,
+          drawer:
+              authId != _auth.currentUser.uid ? null : CustomDrawer(1, padding),
+          appBar: AppBar(
+            toolbarHeight: 70,
+            shadowColor: Colors.grey[850],
+            elevation: 25,
+            centerTitle: true,
+            title: AutoSizeText(
+              authId == _auth.currentUser.uid
+                  ? "Planilhas"
+                  : "Planilhas de $name",
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.grey[850],
+                  fontFamily: "GothamBold",
+                  fontSize: authId == _auth.currentUser.uid ? 30 : 20),
+            ),
+            backgroundColor: Theme.of(context).primaryColor,
           ),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(bottom: model.userData["payApp"] ? 0 : 60),
-          child: Container(
-            height: 60.0,
-            width: 55.0,
-            child: FittedBox(
-              child: FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    _displayModalBottom(context);
-                  });
-                },
-                child: Icon(Icons.add),
-                backgroundColor: Colors.grey[700],
-                foregroundColor: Theme.of(context).primaryColor,
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 60),
+            child: Container(
+              height: 60.0,
+              width: 55.0,
+              child: FittedBox(
+                child: FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      _displayModalBottom(context);
+                    });
+                  },
+                  child: Icon(Icons.add),
+                  backgroundColor: Colors.grey[700],
+                  foregroundColor: Theme.of(context).primaryColor,
+                ),
               ),
             ),
           ),
-        ),
-        backgroundColor: Color(0xff313131),
-        body: FutureBuilder<QuerySnapshot>(
-          future: FirebaseFirestore.instance
-              .collection("users")
-              .doc(authId)
-              .collection("planilha")
-              .get(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData)
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            else {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        padding: EdgeInsets.all(5),
-                        itemCount: snapshot.data.docs.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  settings: RouteSettings(name: "/treino"),
-                                  builder: (context) => TreinoScreen(
-                                      snapshot.data.docs[index]["title"],
-                                      snapshot.data.docs[index].id,
-                                      authId)));
-                            },
-                            child: Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.all(10),
-                                      height: 130,
-                                      decoration: BoxDecoration(
-                                        borderRadius: new BorderRadius.all(
-                                            new Radius.circular(30.0)),
-                                        color: Theme.of(context).primaryColor,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.4),
-                                            spreadRadius: 3,
-                                            blurRadius: 7,
-                                            offset: Offset(2,
-                                                5), // changes position of shadow
-                                          ),
-                                        ],
-                                      ),
-                                      child: Container(
-                                        margin: EdgeInsets.only(
-                                            left: 10, right: 10),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              snapshot.data.docs[index]["title"]
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontSize: 25,
-                                                  fontFamily: "GothamBold"),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Divider(),
-                                            Text(
-                                              snapshot.data.docs[index]
-                                                  ["description"],
-                                              style: TextStyle(
-                                                  fontSize: 22,
-                                                  fontFamily: "GothamBook"),
-                                              textAlign: TextAlign.center,
+          backgroundColor: Color(0xff313131),
+          body: FutureBuilder<QuerySnapshot>(
+            future: FirebaseFirestore.instance
+                .collection("users")
+                .doc(authId)
+                .collection("planilha")
+                .get(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData)
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              else if (snapshot.data.docs.length <= 0) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Você não possui nenhuma\nplanilha ainda",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "GothamThin",
+                              fontSize: 20)),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text("Clique no botão flutuante\npara adicionar uma",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "GothamThin",
+                              fontSize: 20)),
+                    ],
+                  ),
+                );
+              } else {
+                return SafeArea(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                          shrinkWrap: true,
+                          physics: BouncingScrollPhysics(),
+                          padding: EdgeInsets.all(5),
+                          itemCount: snapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    settings: RouteSettings(name: "/treino"),
+                                    builder: (context) => TreinoScreen(
+                                        snapshot.data.docs[index]["title"],
+                                        snapshot.data.docs[index].id,
+                                        authId,
+                                        padding)));
+                              },
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.all(10),
+                                        height: 130,
+                                        decoration: BoxDecoration(
+                                          borderRadius: new BorderRadius.all(
+                                              new Radius.circular(30.0)),
+                                          color: Theme.of(context).primaryColor,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.4),
+                                              spreadRadius: 3,
+                                              blurRadius: 7,
+                                              offset: Offset(2,
+                                                  5), // changes position of shadow
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: IconButton(
-                                        icon: Icon(
-                                          Icons.edit_outlined,
-                                          color: Colors.black.withOpacity(0.8),
+                                        child: Container(
+                                          margin: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                snapshot
+                                                    .data.docs[index]["title"]
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    fontFamily: "GothamBold"),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              Divider(),
+                                              Text(
+                                                snapshot.data.docs[index]
+                                                    ["description"],
+                                                style: TextStyle(
+                                                    fontSize: 22,
+                                                    fontFamily: "GothamBook"),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        splashRadius: 1,
-                                        iconSize: 20,
-                                        onPressed: () {
-                                          _displayEditModalBottom(context,
-                                              snapshot.data.docs[index]);
-                                        })),
-                              ],
-                            ),
-                          );
-                        }),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 80,
-                      child: NativeAdmob(
-                        adUnitID: nativeAdUnitId(),
-                        loading: Container(),
-                        error: Text("Failed to load the ad"),
-                        controller: _nativeAdController,
-                        type: NativeAdmobType.banner,
+                                      ),
+                                    ],
+                                  ),
+                                  Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: IconButton(
+                                          icon: Icon(
+                                            Icons.edit_outlined,
+                                            color:
+                                                Colors.black.withOpacity(0.8),
+                                          ),
+                                          splashRadius: 1,
+                                          iconSize: 20,
+                                          onPressed: () {
+                                            _displayEditModalBottom(context,
+                                                snapshot.data.docs[index]);
+                                          })),
+                                ],
+                              ),
+                            );
+                          }),
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        height: 80,
+                        child: NativeAdmob(
+                          adUnitID: nativeAdUnitId(),
+                          loading: Container(),
+                          error: Text("Failed to load the ad"),
+                          controller: _nativeAdController,
+                          type: NativeAdmobType.banner,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
         ),
       );
     });

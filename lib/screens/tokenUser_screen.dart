@@ -10,14 +10,16 @@ import 'package:url_launcher/url_launcher.dart';
 // ignore: must_be_immutable
 class TokenScreen extends StatefulWidget {
   UserModel model;
-  TokenScreen(this.model);
+  final double padding;
+  TokenScreen(this.model, this.padding);
   @override
-  _TokenScreenState createState() => _TokenScreenState(model);
+  _TokenScreenState createState() => _TokenScreenState(model, padding);
 }
 
 class _TokenScreenState extends State<TokenScreen> {
   UserModel model;
-  _TokenScreenState(this.model);
+  final double padding;
+  _TokenScreenState(this.model, this.padding);
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
@@ -44,8 +46,17 @@ class _TokenScreenState extends State<TokenScreen> {
 
     await canLaunch(url())
         ? launch(url())
-        : print(
-            "open whatsapp app link or do a snackbar with notification that there is no whatsapp installed");
+        :
+        // ignore: deprecated_member_use
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+            padding: EdgeInsets.only(bottom: 60),
+            content: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text("Não há nenhuma aplicação dis"),
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ));
   }
 
   //delete conection do request
@@ -303,512 +314,531 @@ class _TokenScreenState extends State<TokenScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
         length: 2,
-        child: Scaffold(
-            key: _scaffoldKey,
-            drawer: CustomDrawer(3),
-            appBar: AppBar(
-              title: Text(
-                "Meu Personal",
-                style: TextStyle(fontFamily: "GothamBold", fontSize: 20),
-              ),
-              centerTitle: true,
-              bottom: TabBar(indicatorColor: Colors.white, tabs: [
-                Tab(
-                  icon: Icon(
-                    Icons.person_outline,
-                    size: 30,
-                  ),
+        child: Padding(
+          padding: EdgeInsets.only(bottom: padding),
+          child: Scaffold(
+              key: _scaffoldKey,
+              drawer: CustomDrawer(3, padding),
+              appBar: AppBar(
+                title: Text(
+                  "Meu Personal",
+                  style: TextStyle(fontFamily: "GothamBold", fontSize: 20),
                 ),
-                Tab(
-                  icon: Icon(
-                    Icons.list,
-                    size: 30,
+                centerTitle: true,
+                bottom: TabBar(indicatorColor: Colors.white, tabs: [
+                  Tab(
+                    icon: Icon(
+                      Icons.person_outline,
+                      size: 30,
+                    ),
                   ),
-                )
-              ]),
-            ),
-            backgroundColor: Color(0xff313131),
-            body: TabBarView(
-              children: [
-                //tab 1
-                FutureBuilder<QuerySnapshot>(
-                    future: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(model.firebaseUser.uid)
-                        .collection("personal")
-                        .get(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData)
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      if (snapshot.data.docs.length <= 0) {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  Tab(
+                    icon: Icon(
+                      Icons.list,
+                      size: 30,
+                    ),
+                  )
+                ]),
+              ),
+              backgroundColor: Color(0xff313131),
+              body: TabBarView(
+                children: [
+                  //tab 1
+                  FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(model.firebaseUser.uid)
+                          .collection("personal")
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        if (snapshot.data.docs.length <= 0) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.sentiment_dissatisfied_rounded,
+                                  size: 40, color: Colors.amber),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "Você não possui nenhum\nPersonal Trainer ativo",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontFamily: "GothamBook",
+                                    color: Colors.white,
+                                    height: 1.2),
+                              ),
+                            ],
+                          );
+                        }
+                        return ListView(
                           children: [
-                            Icon(Icons.sentiment_dissatisfied_rounded,
-                                size: 40, color: Colors.amber),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              decoration:
+                                  BoxDecoration(color: Colors.grey[900]),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(50),
+                                    child: Container(
+                                      height: 90,
+                                      width: 90,
+                                      decoration: new BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            spreadRadius: 1,
+                                            blurRadius: 2,
+                                            offset: Offset(0,
+                                                2), // changes position of shadow
+                                          ),
+                                        ],
+                                      ),
+                                      child: Image.network(
+                                          snapshot.data.docs[0]
+                                              ["personal_photo"],
+                                          fit: BoxFit.fitWidth,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      }),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    snapshot.data.docs[0]["personal_name"],
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "GothamThin",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Vocês estão conectados há",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: "GothamThin",
+                                            fontSize: 18),
+                                      ),
+                                      Text(
+                                        " ${_calcTime(snapshot.data.docs[0]["connection_date"])} dias",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            color: Colors.green,
+                                            fontFamily: "GothamThin",
+                                            fontSize: 18),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 30),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "E-mail",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontFamily: "Gotham",
+                                        fontSize: 25),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    snapshot.data.docs[0]["personal_email"],
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "GothamThin",
+                                        fontSize: 22),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 30),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Número",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontFamily: "Gotham",
+                                        fontSize: 25),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    _showNumber(snapshot.data.docs[0]
+                                        ["personal_phoneNumber"]),
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "GothamThin",
+                                        fontSize: 22),
+                                  ),
+                                ],
+                              ),
+                            ),
                             SizedBox(
-                              height: 5,
+                              height: 20,
                             ),
-                            Text(
-                              "Você não possui nenhum\nPersonal Trainer ativo",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontFamily: "GothamBook",
-                                  color: Colors.white,
-                                  height: 1.2),
-                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    _sendWhatsAppMessage(
+                                        phone: snapshot.data.docs[0]
+                                            ["personal_phoneNumber"]);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 30),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    height: 40,
+                                    child: Center(
+                                      child: Text(
+                                        "Enviar Mensagem",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: "GothamBook",
+                                            fontSize: 12),
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              spreadRadius: 3,
+                                              blurRadius: 2,
+                                              offset: Offset(0, 4))
+                                        ]),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    _personalDisconect(context,
+                                        snapshot.data.docs[0]["personal_Id"]);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 30),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    height: 40,
+                                    child: Center(
+                                      child: Text(
+                                        "Desconectar",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: "GothamBook",
+                                            fontSize: 12),
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              spreadRadius: 3,
+                                              blurRadius: 2,
+                                              offset: Offset(0, 4))
+                                        ]),
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         );
-                      }
-                      return ListView(
-                        children: [
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.3,
-                            decoration: BoxDecoration(color: Colors.grey[900]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(50),
-                                  child: Container(
-                                    height: 90,
-                                    width: 90,
-                                    decoration: new BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          spreadRadius: 1,
-                                          blurRadius: 2,
-                                          offset: Offset(0,
-                                              2), // changes position of shadow
+                      }),
+                  //tab 2
+                  FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection("users")
+                          .doc(model.firebaseUser.uid)
+                          .collection("request_list")
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        return ListView(
+                          children: [
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text(
+                              "Pedidos de conexão".toUpperCase(),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              style: TextStyle(
+                                  fontFamily: "Gotham",
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 0.0,
+                                      color: Colors.grey[900],
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ]),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            snapshot.data.docs.isEmpty
+                                ? Center(
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                            Icons
+                                                .sentiment_dissatisfied_rounded,
+                                            size: 40,
+                                            color: Colors.amber),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "Você não possui nenhum\npedido de conexão",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontFamily: "GothamBook",
+                                              color: Colors.white,
+                                              height: 1.2),
                                         ),
                                       ],
                                     ),
-                                    child: Image.network(
-                                        snapshot.data.docs[0]["personal_photo"],
-                                        fit: BoxFit.fitWidth,
-                                        loadingBuilder: (BuildContext context,
-                                            Widget child,
-                                            ImageChunkEvent loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      }
-                                      return Center(
-                                          child: CircularProgressIndicator());
-                                    }),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  snapshot.data.docs[0]["personal_name"],
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "GothamThin",
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Vocês estão conectados há",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: "GothamThin",
-                                          fontSize: 18),
-                                    ),
-                                    Text(
-                                      " ${_calcTime(snapshot.data.docs[0]["connection_date"])} dias",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          color: Colors.green,
-                                          fontFamily: "GothamThin",
-                                          fontSize: 18),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 30),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "E-mail",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontFamily: "Gotham",
-                                      fontSize: 25),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  snapshot.data.docs[0]["personal_email"],
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "GothamThin",
-                                      fontSize: 22),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 30),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Número",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontFamily: "Gotham",
-                                      fontSize: 25),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  _showNumber(snapshot.data.docs[0]
-                                      ["personal_phoneNumber"]),
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: "GothamThin",
-                                      fontSize: 22),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  _sendWhatsAppMessage(
-                                      phone: snapshot.data.docs[0]
-                                          ["personal_phoneNumber"]);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 30),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  height: 40,
-                                  child: Center(
-                                    child: Text(
-                                      "Enviar Mensagem",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: "GothamBook",
-                                          fontSize: 12),
-                                    ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                            spreadRadius: 3,
-                                            blurRadius: 2,
-                                            offset: Offset(0, 4))
-                                      ]),
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  _personalDisconect(context,
-                                      snapshot.data.docs[0]["personal_Id"]);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 30),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  height: 40,
-                                  child: Center(
-                                    child: Text(
-                                      "Desconectar",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontFamily: "GothamBook",
-                                          fontSize: 12),
-                                    ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                            spreadRadius: 3,
-                                            blurRadius: 2,
-                                            offset: Offset(0, 4))
-                                      ]),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      );
-                    }),
-                //tab 2
-                FutureBuilder<QuerySnapshot>(
-                    future: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(model.firebaseUser.uid)
-                        .collection("request_list")
-                        .get(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData)
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      return ListView(
-                        children: [
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Text(
-                            "Pedidos de conexão".toUpperCase(),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            style: TextStyle(
-                                fontFamily: "Gotham",
-                                fontSize: 25,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 0.0,
-                                    color: Colors.grey[900],
-                                    offset: Offset(0, 2),
-                                  ),
-                                ]),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          snapshot.data.docs.isEmpty
-                              ? Center(
-                                  child: Column(
-                                    children: [
-                                      Icon(Icons.sentiment_dissatisfied_rounded,
-                                          size: 40, color: Colors.amber),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Você não possui nenhum\npedido de conexão",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontFamily: "GothamBook",
-                                            color: Colors.white,
-                                            height: 1.2),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: BouncingScrollPhysics(),
-                                  padding: EdgeInsets.all(7),
-                                  itemCount: snapshot.data.docs.length,
-                                  itemBuilder: (context, index) {
-                                    print(snapshot.data.docs[index]
-                                        ["personal_email"]);
-                                    return Column(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.all(5),
-                                          child: Container(
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
-                                                      child: Container(
-                                                        height: 50,
-                                                        width: 50,
-                                                        decoration:
-                                                            new BoxDecoration(
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.2),
-                                                              spreadRadius: 1,
-                                                              blurRadius: 2,
-                                                              offset: Offset(0,
-                                                                  2), // changes position of shadow
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        child: Image.network(
-                                                            snapshot.data
-                                                                    .docs[0][
-                                                                "personal_photo"],
-                                                            fit:
-                                                                BoxFit.fitWidth,
-                                                            loadingBuilder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    Widget
-                                                                        child,
-                                                                    ImageChunkEvent
-                                                                        loadingProgress) {
-                                                          if (loadingProgress ==
-                                                              null) {
-                                                            return child;
-                                                          }
-                                                          return Center(
-                                                              child:
-                                                                  CircularProgressIndicator());
-                                                        }),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 5),
-                                                      child: Column(
-                                                        children: [
-                                                          AutoSizeText(
-                                                            snapshot
-                                                                    .data
-                                                                    .docs[index]
-                                                                        [
-                                                                        "personal_name"]
-                                                                        [0]
-                                                                    .toUpperCase() +
-                                                                snapshot
-                                                                    .data
-                                                                    .docs[index]
-                                                                        [
-                                                                        "personal_name"]
-                                                                    .substring(
-                                                                        1),
-                                                            maxFontSize: 20,
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                            style: TextStyle(
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding: EdgeInsets.all(7),
+                                    itemCount: snapshot.data.docs.length,
+                                    itemBuilder: (context, index) {
+                                      print(snapshot.data.docs[index]
+                                          ["personal_email"]);
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.all(5),
+                                            child: Container(
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(50),
+                                                        child: Container(
+                                                          height: 50,
+                                                          width: 50,
+                                                          decoration:
+                                                              new BoxDecoration(
+                                                            boxShadow: [
+                                                              BoxShadow(
                                                                 color: Colors
-                                                                    .white,
-                                                                fontFamily:
-                                                                    "Gotham",
-                                                                fontSize: 15),
+                                                                    .black
+                                                                    .withOpacity(
+                                                                        0.2),
+                                                                spreadRadius: 1,
+                                                                blurRadius: 2,
+                                                                offset: Offset(
+                                                                    0,
+                                                                    2), // changes position of shadow
+                                                              ),
+                                                            ],
                                                           ),
-                                                          AutoSizeText(
-                                                            snapshot.data
-                                                                    .docs[index]
-                                                                [
-                                                                "personal_email"],
-                                                            maxFontSize: 18,
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontFamily:
-                                                                    "GothamThin",
-                                                                fontSize: 13),
-                                                          )
-                                                        ],
+                                                          child: Image.network(
+                                                              snapshot.data
+                                                                      .docs[0][
+                                                                  "personal_photo"],
+                                                              fit: BoxFit
+                                                                  .fitWidth,
+                                                              loadingBuilder:
+                                                                  (BuildContext
+                                                                          context,
+                                                                      Widget
+                                                                          child,
+                                                                      ImageChunkEvent
+                                                                          loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null) {
+                                                              return child;
+                                                            }
+                                                            return Center(
+                                                                child:
+                                                                    CircularProgressIndicator());
+                                                          }),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        TextButton(
-                                                            style: ButtonStyle(
-                                                              overlayColor: MaterialStateProperty
-                                                                  .all<Color>(Colors
-                                                                      .red
-                                                                      .withOpacity(
-                                                                          0.3)),
-                                                            ),
-                                                            onPressed: () {
-                                                              _deletePersonalRequest(
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 5),
+                                                        child: Column(
+                                                          children: [
+                                                            AutoSizeText(
+                                                              snapshot
+                                                                      .data
+                                                                      .docs[
+                                                                          index]
+                                                                          [
+                                                                          "personal_name"]
+                                                                          [0]
+                                                                      .toUpperCase() +
                                                                   snapshot
                                                                       .data
                                                                       .docs[
                                                                           index]
-                                                                      .id);
-                                                            },
-                                                            child: Text(
-                                                              "Excluir",
+                                                                          [
+                                                                          "personal_name"]
+                                                                      .substring(
+                                                                          1),
+                                                              maxFontSize: 20,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
                                                               style: TextStyle(
-                                                                  fontSize: 12,
                                                                   color: Colors
-                                                                      .red),
-                                                            )),
-                                                        TextButton(
-                                                            style: ButtonStyle(
-                                                              overlayColor: MaterialStateProperty
-                                                                  .all<Color>(Colors
-                                                                      .green
-                                                                      .withOpacity(
-                                                                          0.3)),
+                                                                      .white,
+                                                                  fontFamily:
+                                                                      "Gotham",
+                                                                  fontSize: 15),
                                                             ),
-                                                            onPressed: () {
-                                                              _acceptPersonalRequest(
-                                                                  snapshot.data
+                                                            AutoSizeText(
+                                                              snapshot.data
                                                                           .docs[
-                                                                      index]);
-                                                            },
-                                                            child: Text(
-                                                              "Aceitar",
+                                                                      index][
+                                                                  "personal_email"],
+                                                              maxFontSize: 18,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
                                                               style: TextStyle(
-                                                                  fontSize: 12,
                                                                   color: Colors
-                                                                      .green),
-                                                            )),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                                Divider(
-                                                  color: Colors.grey[900],
-                                                  thickness: 0.5,
-                                                ),
-                                              ],
+                                                                      .white,
+                                                                  fontFamily:
+                                                                      "GothamThin",
+                                                                  fontSize: 13),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          TextButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                overlayColor: MaterialStateProperty.all<
+                                                                        Color>(
+                                                                    Colors.red
+                                                                        .withOpacity(
+                                                                            0.3)),
+                                                              ),
+                                                              onPressed: () {
+                                                                _deletePersonalRequest(
+                                                                    snapshot
+                                                                        .data
+                                                                        .docs[
+                                                                            index]
+                                                                        .id);
+                                                              },
+                                                              child: Text(
+                                                                "Excluir",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .red),
+                                                              )),
+                                                          TextButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                overlayColor: MaterialStateProperty.all<
+                                                                        Color>(
+                                                                    Colors.green
+                                                                        .withOpacity(
+                                                                            0.3)),
+                                                              ),
+                                                              onPressed: () {
+                                                                _acceptPersonalRequest(
+                                                                    snapshot.data
+                                                                            .docs[
+                                                                        index]);
+                                                              },
+                                                              child: Text(
+                                                                "Aceitar",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: Colors
+                                                                        .green),
+                                                              )),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Divider(
+                                                    color: Colors.grey[900],
+                                                    thickness: 0.5,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    );
-                                  })
-                        ],
-                      );
-                    })
-              ],
-            )));
+                                        ],
+                                      );
+                                    })
+                          ],
+                        );
+                      })
+                ],
+              )),
+        ));
   }
 }

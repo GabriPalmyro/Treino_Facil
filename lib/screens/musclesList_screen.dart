@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/exerciseDetail_screen.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
@@ -18,11 +19,12 @@ class MuscleListScreen extends StatefulWidget {
   final bool addMode;
   final int set;
   final int qntdExe;
+  final double padding;
   MuscleListScreen(this.addMode, this.set, this.treinoId, this.exeId,
-      this.qntdExe, this.authId, this.title);
+      this.qntdExe, this.authId, this.title, this.padding);
   @override
   _MuscleListScreenState createState() => _MuscleListScreenState(
-      addMode, set, treinoId, exeId, qntdExe, authId, title);
+      addMode, set, treinoId, exeId, qntdExe, authId, title, padding);
 }
 
 class _MuscleListScreenState extends State<MuscleListScreen> {
@@ -33,8 +35,9 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
   final String exeId;
   final int qntdExe;
   final String title;
+  final double padding;
   _MuscleListScreenState(this.addMode, this.set, this.treinoId, this.exeId,
-      this.qntdExe, this.authId, this.title);
+      this.qntdExe, this.authId, this.title, this.padding);
 
   //container animado controles
   double _containerHeight = 0;
@@ -356,12 +359,47 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
         });
   }
 
+  Future<void> _addRequest(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+            backgroundColor: Color(0xff313131),
+            title: Text(
+              'Para continuar vendo exercícios um anúncio aparecerá',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "GothamBook",
+                  fontSize: 20,
+                  height: 1.1),
+            ),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    interstitialAdMuscle.show();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Ok",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Gotham",
+                        fontSize: 18,
+                      )))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: bottomPadding),
+      padding: EdgeInsets.only(bottom: padding),
       child: Scaffold(
-          drawer: addMode ? null : CustomDrawer(2),
+          drawer: addMode ? null : CustomDrawer(2, padding),
           appBar: AppBar(
             title: _isSearching
                 ? _buildSearchField()
@@ -423,7 +461,7 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                   )
                                 : Container(),
                             GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 setState(() {
                                   _isSearching = false;
                                   _containerHeight = 0;
@@ -441,34 +479,22 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                           treinoId,
                                           exeId,
                                           authId,
-                                          title)));
+                                          title,
+                                          padding)));
                                 } else {
-                                  if (_isInterstitialAdReady && adClick >= 2) {
-                                    interstitialAdMuscle.show();
+                                  if (_isInterstitialAdReady && adClick >= 5) {
+                                    await _addRequest(context);
                                     adClick = 0;
 
                                     _displayExerciseModalBottom(
                                         context, _resultList[index]);
+
                                     interstitialAdMuscle.load();
                                   } else {
                                     adClick++;
                                     _displayExerciseModalBottom(
                                         context, _resultList[index]);
                                   }
-                                }
-                              },
-                              onLongPress: () {
-                                if (_isInterstitialAdReady && adClick >= 2) {
-                                  interstitialAdMuscle.show();
-                                  adClick = 0;
-
-                                  _displayExerciseModalBottom(
-                                      context, _resultList[index]);
-                                  interstitialAdMuscle.load();
-                                } else {
-                                  adClick++;
-                                  _displayExerciseModalBottom(
-                                      context, _resultList[index]);
                                 }
                               },
                               child: Container(
