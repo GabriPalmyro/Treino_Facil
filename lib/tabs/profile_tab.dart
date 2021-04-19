@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:tabela_treino/models/user_model.dart';
-import 'package:tabela_treino/screens/infos_screen.dart';
 import 'package:tabela_treino/screens/login_screen.dart';
 import 'package:tabela_treino/tiles/changePass_tile.dart';
 import 'package:tabela_treino/tiles/my_account_tile.dart';

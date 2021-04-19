@@ -324,6 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushAndRemoveUntil(
         context,
         new MaterialPageRoute(
+            settings: RouteSettings(name: "/home"),
             builder: (BuildContext context) => HomeTab(padding)),
         (Route<dynamic> route) => false);
   }

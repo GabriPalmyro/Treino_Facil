@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/exerciseDetail_screen.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';

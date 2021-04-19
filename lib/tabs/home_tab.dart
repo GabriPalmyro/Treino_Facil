@@ -1,12 +1,17 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/models/user_model.dart';
+import 'package:tabela_treino/screens/meuTreino_screen.dart';
 import 'package:tabela_treino/screens/musclesList_screen.dart';
 import 'package:tabela_treino/screens/tokenPersonal_screen.dart';
 import 'package:tabela_treino/screens/tokenUser_screen.dart';
+import 'package:tabela_treino/tabs/planilha_tab.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
 import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:flutter_native_admob/native_admob_controller.dart';
@@ -32,13 +37,18 @@ class _HomeTabState extends State<HomeTab> {
 
   final _nativeAdController = NativeAdmobController();
   StreamSubscription _subscription;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  List _planilhaList = [];
+  int _currentIndex;
+  bool _isLoading = true;
 
   @override
   void initState() {
     _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
     super.initState();
+    getPlanSnapshots();
 
-    print(padding.toString() + " home tab pad");
+    //print(padding.toString() + " home tab pad");
     _admobBanner = AdmobBanner(
       adUnitId: bannerAdUnitId(),
       adSize: AdmobBannerSize.BANNER,
@@ -79,10 +89,25 @@ class _HomeTabState extends State<HomeTab> {
     }
   }
 
+  getPlanSnapshots() async {
+    QuerySnapshot data;
+    //if (_selTypeSearch == "title") {
+    data = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(_auth.currentUser.uid)
+        .collection("planilha")
+        .get();
+
+    setState(() {
+      _planilhaList = data.docs;
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
-      if (model.userData["name"] == null)
+      if (model.userData["name"] == null || _isLoading)
         return Center(
           child: Container(
             width: MediaQuery.of(context).size.width,
@@ -160,7 +185,7 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
                 SizedBox(
-                  height: 30,
+                  height: _planilhaList.isEmpty ? 10 : 30,
                 ),
                 GestureDetector(
                   onTap: () {
@@ -175,7 +200,7 @@ class _HomeTabState extends State<HomeTab> {
                       height: 130,
                       decoration: BoxDecoration(
                         borderRadius:
-                            new BorderRadius.all(new Radius.circular(30.0)),
+                            new BorderRadius.all(new Radius.circular(20.0)),
                         color: Theme.of(context).primaryColor,
                         boxShadow: [
                           BoxShadow(
@@ -213,6 +238,165 @@ class _HomeTabState extends State<HomeTab> {
                       )),
                 ),
                 SizedBox(
+                  height: _planilhaList.isEmpty ? 10 : 20,
+                ),
+                _isLoading
+                    ? Container(
+                        height: 150,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : _planilhaList.isEmpty
+                        ? Container(
+                            height: 100,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        settings:
+                                            RouteSettings(name: "/planilhas"),
+                                        builder: (context) => PlanilhaScreen(
+                                            model.firebaseUser.uid,
+                                            model.userData["name"],
+                                            padding)));
+                              },
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Text(
+                                    "Clique aqui para criar sua primeira planilha",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "GothamBook",
+                                        fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            settings: RouteSettings(
+                                                name: "/planilhas"),
+                                            builder: (context) =>
+                                                PlanilhaScreen(
+                                                    model.firebaseUser.uid,
+                                                    model.userData["name"],
+                                                    padding)));
+                                  },
+                                  child: Text(
+                                    "Minhas planilhas",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "GothamBook",
+                                        fontSize: 22),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              CarouselSlider(
+                                options: CarouselOptions(
+                                  height: 100.0,
+                                  autoPlay:
+                                      _planilhaList.length <= 1 ? false : true,
+                                  autoPlayInterval: Duration(seconds: 4),
+                                  autoPlayAnimationDuration:
+                                      Duration(milliseconds: 900),
+                                  autoPlayCurve: Curves.fastOutSlowIn,
+                                  pauseAutoPlayOnTouch: true,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _currentIndex = index;
+                                    });
+                                  },
+                                ),
+                                items: _planilhaList.map((i) {
+                                  return Builder(
+                                    builder: (BuildContext context) {
+                                      return InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  settings: RouteSettings(
+                                                      name: "/treino"),
+                                                  builder: (context) =>
+                                                      TreinoScreen(
+                                                          i["title"],
+                                                          i.id,
+                                                          _auth.currentUser.uid,
+                                                          padding)));
+                                        },
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          decoration: BoxDecoration(
+                                            borderRadius: new BorderRadius.all(
+                                                new Radius.circular(10.0)),
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                                spreadRadius: 3,
+                                                blurRadius: 7,
+                                                offset: Offset(2,
+                                                    5), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                                left: 10, right: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  i["title"]
+                                                      .toString()
+                                                      .toUpperCase(),
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontFamily: "GothamBold"),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                Divider(),
+                                                Text(
+                                                  i["description"],
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: "GothamBook"),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                SizedBox(
                   height: 20,
                 ),
                 Container(
@@ -248,7 +432,7 @@ class _HomeTabState extends State<HomeTab> {
                     height: 150,
                     decoration: BoxDecoration(
                       borderRadius:
-                          new BorderRadius.all(new Radius.circular(30.0)),
+                          new BorderRadius.all(new Radius.circular(20.0)),
                       color: Theme.of(context).primaryColor,
                       boxShadow: [
                         BoxShadow(
@@ -313,7 +497,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
                 SizedBox(
-                  height: 30,
+                  height: 100,
                 ),
               ],
             )),

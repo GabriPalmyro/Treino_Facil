@@ -210,6 +210,7 @@ class CustomDrawer extends StatelessWidget {
                           if (pageNow != 0) {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
+                                    settings: RouteSettings(name: "/home"),
                                     builder: (context) => HomeTab(padding)));
                             print("home");
                           } else {

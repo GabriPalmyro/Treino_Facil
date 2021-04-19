@@ -559,6 +559,18 @@ class _TreinoScreenState extends State<TreinoScreen> {
                             color: Colors.white,
                             fontFamily: "GothamThin",
                             fontSize: 20)),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text("Ou clique aqui para recarregar",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "GothamThin",
+                              fontSize: 20)),
+                    ),
                   ],
                 ),
               );

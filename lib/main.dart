@@ -1,11 +1,13 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tabela_treino/push_notification_service.dart';
 
 import 'package:tabela_treino/screens/login_screen.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
@@ -41,6 +43,7 @@ class MyApp extends StatefulWidget {
 }
 
 FirebaseAuth _auth = FirebaseAuth.instance;
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 bool _payApp;
 double padding = 0;
 
@@ -95,7 +98,7 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         if (value == true || value == false) _payApp = value;
       });
-      print("ESTADO DO USUARIO -- $_payApp");
+      //print("ESTADO DO USUARIO -- $_payApp");
       if (!_payApp) {
         startBanner();
         displayBanner();
@@ -108,6 +111,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final pushNotificationService = PushNotificationService(_firebaseMessaging);
+    pushNotificationService.initialise();
     return ScopedModel<UserModel>(
         model: UserModel(),
         child: MaterialApp(
@@ -167,18 +172,22 @@ class SplashState extends State<Splash> with AfterLayoutMixin<Splash> {
             new MaterialPageRoute(builder: (context) => IntroScreen(padding)));
       } else {*/
       //se ela for menor que 7 dias ir ao app normalment
-      Navigator.of(context).pushReplacement(new MaterialPageRoute(
-          builder: (context) => _auth.currentUser == null
-              ? LoginScreen(padding)
-              : HomeTab(padding)));
+      _auth.currentUser == null
+          ? Navigator.of(context).pushReplacement(new MaterialPageRoute(
+              settings: RouteSettings(name: "/login"),
+              builder: (context) => LoginScreen(padding)))
+          : Navigator.of(context).pushReplacement(new MaterialPageRoute(
+              settings: RouteSettings(name: "/home"),
+              builder: (context) => HomeTab(padding)));
       //}
     } else {
       // caso seja a primeira vez, mostrar introscreen e setar true
       await prefs.setBool('seen', true);
       //DateTime now = DateTime.now();
       //await prefs.setString('seen_date', now.toString());
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => IntroScreen(padding)));
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          settings: RouteSettings(name: "/intro"),
+          builder: (context) => IntroScreen(padding)));
     }
   }
 

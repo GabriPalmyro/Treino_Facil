@@ -39,6 +39,10 @@ def keystoreProperties = new Properties()
         checkReleaseBuilds false //<- add this line
     }
 
+    aaptOptions {
+        cruncherEnabled = false
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -48,7 +52,7 @@ def keystoreProperties = new Properties()
         applicationId "br.com.palmyro.treino_facil"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 7
+        versionCode 8
         versionName "1.1.0"
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

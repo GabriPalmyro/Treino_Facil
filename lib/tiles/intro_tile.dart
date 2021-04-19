@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tabela_treino/screens/infos_screen.dart';
 import 'package:tabela_treino/screens/login_screen.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,7 +73,6 @@ class _IntroScreenState extends State<IntroScreen> {
                     child: TextButton(
                         onPressed: () {
                           bottomSelectedIndex += 1;
-                          print(bottomSelectedIndex);
                           pageController.animateToPage(bottomSelectedIndex,
                               duration: Duration(seconds: 1),
                               curve: Curves.ease);
@@ -117,7 +115,6 @@ class _IntroScreenState extends State<IntroScreen> {
                     child: TextButton(
                         onPressed: () {
                           bottomSelectedIndex += 1;
-                          print(bottomSelectedIndex);
                           pageController.animateToPage(bottomSelectedIndex,
                               duration: Duration(seconds: 1),
                               curve: Curves.ease);
@@ -160,7 +157,6 @@ class _IntroScreenState extends State<IntroScreen> {
                     child: TextButton(
                         onPressed: () {
                           bottomSelectedIndex += 1;
-                          print(bottomSelectedIndex);
                           pageController.animateToPage(bottomSelectedIndex,
                               duration: Duration(seconds: 1),
                               curve: Curves.ease);
@@ -203,11 +199,17 @@ class _IntroScreenState extends State<IntroScreen> {
                       alignment: Alignment.center,
                       child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                                SlideLeftRoute(
-                                    page: _auth.currentUser == null
-                                        ? LoginScreen(padding)
-                                        : HomeTab(padding)));
+                            _auth.currentUser == null
+                                ? Navigator.of(context).pushReplacement(
+                                    new MaterialPageRoute(
+                                        settings: RouteSettings(name: "/login"),
+                                        builder: (context) =>
+                                            LoginScreen(padding)))
+                                : Navigator.of(context).pushReplacement(
+                                    new MaterialPageRoute(
+                                        settings: RouteSettings(name: "/home"),
+                                        builder: (context) =>
+                                            HomeTab(padding)));
                           },
                           child: Text("Ir para o App".toUpperCase(),
                               style: TextStyle(
