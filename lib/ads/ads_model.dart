@@ -65,7 +65,7 @@ String nativeAdUnitId() {
 void startBanner() {
   myBanner = BannerAd(
     adUnitId: bannerAdIdAndroid,
-    size: AdSize.banner,
+    size: AdSize.largeBanner,
     targetingInfo: targetingInfo,
     listener: (MobileAdEvent event) {
       if (event == MobileAdEvent.opened) {

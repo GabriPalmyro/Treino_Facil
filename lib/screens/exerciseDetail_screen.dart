@@ -117,6 +117,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
 
   Future<void> _alertNextExeAdd(BuildContext context, String idExe) async {
     return showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(

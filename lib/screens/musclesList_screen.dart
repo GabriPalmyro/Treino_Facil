@@ -360,6 +360,7 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
 
   Future<void> _addRequest(BuildContext context) async {
     return showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(

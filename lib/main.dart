@@ -122,6 +122,12 @@ class _MyAppState extends State<MyApp> {
               primaryColor: const Color(0xffffd200),
             ),
             debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              return MediaQuery(
+                child: child,
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              );
+            },
             home: new Splash()
             /*_auth.currentUser == null
               ? LoginScreen(padding)

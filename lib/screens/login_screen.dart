@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 100,
                   ),
                   Text(
-                    "Treino Fácil!",
+                    "Treino Fácil".toUpperCase(),
                     style: TextStyle(
                         color: Colors.grey[850],
                         fontFamily: "GothamBold",
