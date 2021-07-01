@@ -189,7 +189,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
         "pos": pos + 1
       }).then((value) {
         print("deu certo");
-        Navigator.popUntil(context, ModalRoute.withName('/treino'));
+        Navigator.pop(context);
+        Navigator.pop(context);
       }).catchError((_) {
         print("deu errado");
         // ignore: deprecated_member_use

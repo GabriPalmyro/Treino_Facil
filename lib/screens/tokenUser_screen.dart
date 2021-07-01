@@ -404,7 +404,7 @@ class _TokenScreenState extends State<TokenScreen> {
                                       child: Image.network(
                                           snapshot.data.docs[0]
                                               ["personal_photo"],
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.cover,
                                           loadingBuilder: (BuildContext context,
                                               Widget child,
                                               ImageChunkEvent loadingProgress) {

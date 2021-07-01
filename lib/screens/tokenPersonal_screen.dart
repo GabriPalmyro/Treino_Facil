@@ -129,7 +129,7 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                         height: 30,
                       ),
                       Container(
-                        height: MediaQuery.of(context).size.height * 0.5,
+                        //height: MediaQuery.of(context).size.height * 0.5,
                         width: MediaQuery.of(context).size.height * 0.7,
                         margin: EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
@@ -204,9 +204,11 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                                                         ],
                                                       ),
                                                       child: Image.network(
-                                                          snapshot.data
-                                                                  .docs[index]
-                                                              ["client_photo"]),
+                                                        snapshot.data
+                                                                .docs[index]
+                                                            ["client_photo"],
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
                                                   ),
                                                   Padding(

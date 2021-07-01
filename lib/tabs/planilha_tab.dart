@@ -528,7 +528,7 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
                                         height: 130,
                                         decoration: BoxDecoration(
                                           borderRadius: new BorderRadius.all(
-                                              new Radius.circular(30.0)),
+                                              new Radius.circular(12.0)),
                                           color: Theme.of(context).primaryColor,
                                           boxShadow: [
                                             BoxShadow(

@@ -96,6 +96,7 @@ class _HomeTabState extends State<HomeTab> {
         .collection("users")
         .doc(_auth.currentUser.uid)
         .collection("planilha")
+        .orderBy('title')
         .get();
 
     setState(() {
@@ -200,7 +201,7 @@ class _HomeTabState extends State<HomeTab> {
                       height: 130,
                       decoration: BoxDecoration(
                         borderRadius:
-                            new BorderRadius.all(new Radius.circular(20.0)),
+                            new BorderRadius.all(new Radius.circular(12.0)),
                         color: Theme.of(context).primaryColor,
                         boxShadow: [
                           BoxShadow(
@@ -304,96 +305,93 @@ class _HomeTabState extends State<HomeTab> {
                               SizedBox(
                                 height: 5,
                               ),
-                              CarouselSlider(
-                                options: CarouselOptions(
-                                  height: 100.0,
-                                  autoPlay:
-                                      _planilhaList.length <= 1 ? false : true,
-                                  autoPlayInterval: Duration(seconds: 4),
-                                  autoPlayAnimationDuration:
-                                      Duration(milliseconds: 900),
-                                  autoPlayCurve: Curves.fastOutSlowIn,
-                                  pauseAutoPlayOnTouch: true,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      _currentIndex = index;
-                                    });
-                                  },
-                                ),
-                                items: _planilhaList.map((i) {
-                                  return Builder(
-                                    builder: (BuildContext context) {
+                              Container(
+                                height: 100.0,
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: BouncingScrollPhysics(),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _planilhaList.length,
+                                    itemBuilder: (context, index) {
                                       return InkWell(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  settings: RouteSettings(
-                                                      name: "/treino"),
-                                                  builder: (context) =>
-                                                      TreinoScreen(
-                                                          i["title"],
-                                                          i.id,
-                                                          _auth.currentUser.uid,
-                                                          padding)));
-                                        },
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          decoration: BoxDecoration(
-                                            borderRadius: new BorderRadius.all(
-                                                new Radius.circular(10.0)),
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.4),
-                                                spreadRadius: 3,
-                                                blurRadius: 7,
-                                                offset: Offset(2,
-                                                    5), // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    settings: RouteSettings(
+                                                        name: "/treino"),
+                                                    builder: (context) =>
+                                                        TreinoScreen(
+                                                            _planilhaList[index]
+                                                                ["title"],
+                                                            _planilhaList[index]
+                                                                .id,
+                                                            _auth.currentUser
+                                                                .uid,
+                                                            padding)));
+                                          },
                                           child: Container(
-                                            margin: EdgeInsets.only(
-                                                left: 10, right: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  i["title"]
-                                                      .toString()
-                                                      .toUpperCase(),
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontFamily: "GothamBold"),
-                                                  textAlign: TextAlign.center,
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 5.0),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 20, vertical: 20),
+                                              decoration: BoxDecoration(
+                                                borderRadius: new BorderRadius
+                                                        .all(
+                                                    new Radius.circular(10.0)),
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.4),
+                                                    spreadRadius: 3,
+                                                    blurRadius: 7,
+                                                    offset: Offset(2,
+                                                        5), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Container(
+                                                margin: EdgeInsets.only(
+                                                    left: 10, right: 10),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      _planilhaList[index]
+                                                              ["title"]
+                                                          .toString()
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          fontFamily:
+                                                              "GothamBold"),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                    Divider(
+                                                      thickness: 1.5,
+                                                    ),
+                                                    Text(
+                                                      _planilhaList[index]
+                                                          ["description"],
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontFamily:
+                                                              "GothamBook"),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ],
                                                 ),
-                                                Divider(),
-                                                Text(
-                                                  i["description"],
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontFamily: "GothamBook"),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                }).toList(),
-                              ),
+                                              )));
+                                    }),
+                              )
                             ],
                           ),
                 SizedBox(
@@ -427,9 +425,8 @@ class _HomeTabState extends State<HomeTab> {
                   child: Container(
                     alignment: Alignment.topLeft,
                     margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding:
-                        const EdgeInsets.only(top: 15, left: 20, right: 10),
-                    height: 150,
+                    padding: const EdgeInsets.only(
+                        top: 15, left: 20, right: 10, bottom: 40),
                     decoration: BoxDecoration(
                       borderRadius:
                           new BorderRadius.all(new Radius.circular(20.0)),

@@ -367,15 +367,17 @@ class _TreinoScreenState extends State<TreinoScreen> {
         .toStringAsFixed(2);
   }
 
-  Future<void> _displayExerciseModalBottom(
-      BuildContext context, String exerciseVideo, String obs) async {
+  Future<void> _displayExerciseModalBottom(BuildContext context,
+      String exerciseVideo, String series, String reps, String carga) async {
+    print(series + reps + carga);
     return showModalBottomSheet(
         backgroundColor: Colors.grey[850],
+        isScrollControlled: true,
         context: context,
         builder: (context) {
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
-            height: 500,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 60),
               child: ListView(
@@ -427,16 +429,82 @@ class _TreinoScreenState extends State<TreinoScreen> {
                   Divider(
                     thickness: 1.5,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                        child: AutoSizeText("Observação:\n" + obs,
-                            textAlign: TextAlign.center,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            'Séries',
                             style: TextStyle(
-                                height: 1.1,
-                                color: Colors.white,
-                                fontFamily: "GothamBook",
-                                fontSize: 18))),
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontFamily: 'GothamBold',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          AutoSizeText(
+                            series.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontFamily: 'GothamBook',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            'Repetições',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontFamily: 'GothamBold',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          AutoSizeText(
+                            reps.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontFamily: 'GothamBook',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            'Carga',
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontFamily: 'GothamBold',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          AutoSizeText(
+                            carga.toUpperCase() + ' kg',
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontFamily: 'GothamBook',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   SizedBox(height: 22),
                 ],
@@ -663,486 +731,292 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                   ],
                                 ),
                                 snapshot.data.docs[index]["set_type"] != "biset"
-                                    ? InkWell(
-                                        onTap: () {
-                                          _displayExerciseModalBottom(
-                                              context,
-                                              snapshot.data.docs[index]
-                                                  ["video"],
-                                              snapshot.data.docs[index]["obs"]);
-                                        },
-                                        splashColor: Colors.grey[900],
-                                        borderRadius: const BorderRadius.all(
-                                            const Radius.circular(10.0)),
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 20, horizontal: 10),
-                                          height: 150,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          decoration: BoxDecoration(
-                                            borderRadius: new BorderRadius.all(
-                                                new Radius.circular(20.0)),
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.4),
-                                                spreadRadius: 4,
-                                                blurRadius: 2,
-                                                offset: Offset(1,
-                                                    5), // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                          child: _isChanging
-                                              ? Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        new AlwaysStoppedAnimation<
-                                                                Color>(
-                                                            Colors.grey[850]),
-                                                  ),
-                                                )
-                                              : Stack(
-                                                  children: [
-                                                    Positioned(
-                                                        right: -5,
-                                                        child: IconButton(
-                                                            icon: Icon(
-                                                              Icons
-                                                                  .edit_outlined,
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.6),
-                                                            ),
-                                                            iconSize: 20,
-                                                            onPressed: () {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  SlideLeftRoute(
-                                                                      page: EditExercise(
-                                                                          treinoId,
-                                                                          title,
-                                                                          snapshot
-                                                                              .data
-                                                                              .docs[index],
-                                                                          1,
-                                                                          authId,
-                                                                          padding)));
-                                                            })),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .symmetric(
-                                                                    horizontal:
-                                                                        30),
-                                                            child: AutoSizeText(
-                                                              snapshot
-                                                                  .data
-                                                                  .docs[index]
-                                                                      ["title"]
-                                                                  .toString()
-                                                                  .toUpperCase(),
-                                                              maxLines: 3,
-                                                              style: TextStyle(
-                                                                  fontSize: 20,
-                                                                  fontFamily:
-                                                                      "GothamBold"),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                          ),
-                                                          Divider(
-                                                            color: Colors.black,
-                                                          ),
-                                                          SizedBox(
-                                                            height: 8,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceAround,
-                                                            children: [
-                                                              Column(
-                                                                children: [
-                                                                  Text("Séries",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              20,
-                                                                          fontFamily:
-                                                                              "Gotham")),
-                                                                  SizedBox(
-                                                                    height: 3,
-                                                                  ),
-                                                                  Text(
-                                                                      snapshot.data
-                                                                              .docs[index]
-                                                                          [
-                                                                          "series"],
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                          fontFamily:
-                                                                              "GothamBook")),
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                children: [
-                                                                  Text(
-                                                                      "Repetições",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              20,
-                                                                          fontFamily:
-                                                                              "Gotham")),
-                                                                  SizedBox(
-                                                                    height: 3,
-                                                                  ),
-                                                                  Text(
-                                                                      snapshot.data
-                                                                              .docs[index]
-                                                                          [
-                                                                          "reps"],
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                          fontFamily:
-                                                                              "GothamBook")),
-                                                                ],
-                                                              ),
-                                                              Column(
-                                                                children: [
-                                                                  Text("Carga",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              20,
-                                                                          fontFamily:
-                                                                              "Gotham")),
-                                                                  SizedBox(
-                                                                    height: 3,
-                                                                  ),
-                                                                  Text(
-                                                                      "${snapshot.data.docs[index]["peso"].toString()}kg",
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              18,
-                                                                          fontFamily:
-                                                                              "GothamBook")),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                        ),
-                                      )
-                                    : Row(
-                                        children: [
-                                          InkWell(
-                                            onTap: () async {
-                                              await FirebaseFirestore.instance
-                                                  .collection("users")
-                                                  .doc(authId)
-                                                  .collection("planilha")
-                                                  .doc(treinoId)
-                                                  .collection("exercícios")
-                                                  .doc(snapshot
-                                                      .data.docs[index].id)
-                                                  .collection("sets")
-                                                  .get()
-                                                  .then((snapshot) {
-                                                _displayExerciseModalBottom(
-                                                    context,
-                                                    snapshot.docs[1]["video"],
-                                                    snapshot.docs[1]["obs"]);
-                                              });
-                                            },
-                                            radius: 20,
-                                            borderRadius: const BorderRadius
-                                                    .all(
-                                                const Radius.circular(10.0)),
-                                            child: Container(
-                                              padding: EdgeInsets.all(5),
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10, horizontal: 10),
-                                              height: 100,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.35,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        const Radius.circular(
-                                                            10.0)),
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.4),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 4,
-                                                    offset: Offset(1,
-                                                        5), // changes position of shadow
-                                                  ),
-                                                ],
-                                              ),
-                                              child: _isChanging
-                                                  ? Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            new AlwaysStoppedAnimation<
-                                                                    Color>(
-                                                                Colors
-                                                                    .grey[850]),
-                                                      ),
-                                                    )
-                                                  : Stack(
-                                                      children: [
-                                                        Positioned(
-                                                            top: -15,
-                                                            right: -15,
-                                                            child: IconButton(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .edit_outlined,
-                                                                  color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.6),
-                                                                ),
-                                                                splashRadius:
-                                                                    20,
-                                                                iconSize: 15,
-                                                                onPressed:
-                                                                    () async {
-                                                                  await FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          "users")
-                                                                      .doc(
-                                                                          authId)
-                                                                      .collection(
-                                                                          "planilha")
-                                                                      .doc(
-                                                                          treinoId)
-                                                                      .collection(
-                                                                          "exercícios")
-                                                                      .doc(snapshot
-                                                                          .data
-                                                                          .docs[
-                                                                              index]
-                                                                          .id)
-                                                                      .collection(
-                                                                          "sets")
-                                                                      .get()
-                                                                      .then(
-                                                                          (snapshot) {
-                                                                    Navigator.push(
-                                                                        context,
-                                                                        SlideLeftRoute(
-                                                                            page: EditExercise(
-                                                                                treinoId,
-                                                                                title,
-                                                                                snapshot.docs[1],
-                                                                                2,
-                                                                                authId,
-                                                                                padding)));
-                                                                  });
-                                                                })),
-                                                        Center(
-                                                          child: AutoSizeText(
-                                                            snapshot
-                                                                .data
-                                                                .docs[index]
-                                                                    ["title1"]
-                                                                .toString()
-                                                                .toUpperCase(),
-                                                            maxLines: 3,
-                                                            style: TextStyle(
-                                                                height: 1.1,
-                                                                fontSize: 15,
-                                                                fontFamily:
-                                                                    "GothamBold"),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                            ),
-                                          ),
-                                          Text(
-                                            "+",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: "GothamBold",
-                                                fontSize: 30),
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              await FirebaseFirestore.instance
-                                                  .collection("users")
-                                                  .doc(authId)
-                                                  .collection("planilha")
-                                                  .doc(treinoId)
-                                                  .collection("exercícios")
-                                                  .doc(snapshot
-                                                      .data.docs[index].id)
-                                                  .collection("sets")
-                                                  .get()
-                                                  .then((snapshot) {
-                                                _displayExerciseModalBottom(
-                                                    context,
-                                                    snapshot.docs[0]["video"],
-                                                    snapshot.docs[0]["obs"]);
-                                              });
-                                            },
-                                            radius: 20,
-                                            borderRadius: const BorderRadius
-                                                    .all(
-                                                const Radius.circular(10.0)),
-                                            child: Container(
-                                              padding: EdgeInsets.all(5),
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10, horizontal: 10),
-                                              height: 100,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.35,
-                                              decoration: BoxDecoration(
-                                                borderRadius: new BorderRadius
-                                                        .all(
-                                                    new Radius.circular(10.0)),
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.4),
-                                                    spreadRadius: 3,
-                                                    blurRadius: 7,
-                                                    offset: Offset(2,
-                                                        5), // changes position of shadow
-                                                  ),
-                                                ],
-                                              ),
-                                              child: _isChanging
-                                                  ? Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            new AlwaysStoppedAnimation<
-                                                                    Color>(
-                                                                Colors
-                                                                    .grey[850]),
-                                                      ),
-                                                    )
-                                                  : Stack(
-                                                      children: [
-                                                        Positioned(
-                                                            top: -15,
-                                                            right: -15,
-                                                            child: IconButton(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .edit_outlined,
-                                                                  color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.6),
-                                                                ),
-                                                                splashRadius:
-                                                                    20,
-                                                                iconSize: 15,
-                                                                onPressed:
-                                                                    () async {
-                                                                  await FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          "users")
-                                                                      .doc(
-                                                                          authId)
-                                                                      .collection(
-                                                                          "planilha")
-                                                                      .doc(
-                                                                          treinoId)
-                                                                      .collection(
-                                                                          "exercícios")
-                                                                      .doc(snapshot
-                                                                          .data
-                                                                          .docs[
-                                                                              index]
-                                                                          .id)
-                                                                      .collection(
-                                                                          "sets")
-                                                                      .get()
-                                                                      .then(
-                                                                          (snapshot) {
-                                                                    Navigator.push(
-                                                                        context,
-                                                                        SlideLeftRoute(
-                                                                            page: EditExercise(
-                                                                                treinoId,
-                                                                                title,
-                                                                                snapshot.docs[0],
-                                                                                2,
-                                                                                authId,
-                                                                                padding)));
-                                                                  });
-                                                                })),
-                                                        Center(
-                                                          child: AutoSizeText(
-                                                            snapshot
-                                                                .data
-                                                                .docs[index]
-                                                                    ["title2"]
-                                                                .toString()
-                                                                .toUpperCase(),
-                                                            maxLines: 3,
-                                                            style: TextStyle(
-                                                                height: 1.1,
-                                                                fontSize: 15,
-                                                                fontFamily:
-                                                                    "GothamBold"),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                    ? exercicioContainerUni(
+                                        context, snapshot, index)
+                                    : setContainerColumn(
+                                        context, snapshot, index)
+                                // : Row(
+                                //     children: [
+                                //       InkWell(
+                                //         onTap: () async {
+                                //           await FirebaseFirestore.instance
+                                //               .collection("users")
+                                //               .doc(authId)
+                                //               .collection("planilha")
+                                //               .doc(treinoId)
+                                //               .collection("exercícios")
+                                //               .doc(snapshot
+                                //                   .data.docs[index].id)
+                                //               .collection("sets")
+                                //               .get()
+                                //               .then((snapshot) {
+                                //             _displayExerciseModalBottom(
+                                //                 context,
+                                //                 snapshot.docs[1]["video"],
+                                //                 snapshot.docs[1]["obs"]);
+                                //           });
+                                //         },
+                                //         radius: 20,
+                                //         borderRadius: const BorderRadius
+                                //                 .all(
+                                //             const Radius.circular(10.0)),
+                                //         child: Container(
+                                //           padding: EdgeInsets.all(5),
+                                //           margin: EdgeInsets.symmetric(
+                                //               vertical: 10, horizontal: 10),
+                                //           height: 100,
+                                //           width: MediaQuery.of(context)
+                                //                   .size
+                                //                   .width *
+                                //               0.35,
+                                //           decoration: BoxDecoration(
+                                //             borderRadius:
+                                //                 const BorderRadius.all(
+                                //                     const Radius.circular(
+                                //                         10.0)),
+                                //             color: Theme.of(context)
+                                //                 .primaryColor,
+                                //             boxShadow: [
+                                //               BoxShadow(
+                                //                 color: Colors.black
+                                //                     .withOpacity(0.4),
+                                //                 spreadRadius: 2,
+                                //                 blurRadius: 4,
+                                //                 offset: Offset(1,
+                                //                     5), // changes position of shadow
+                                //               ),
+                                //             ],
+                                //           ),
+                                //           child: _isChanging
+                                //               ? Center(
+                                //                   child:
+                                //                       CircularProgressIndicator(
+                                //                     valueColor:
+                                //                         new AlwaysStoppedAnimation<
+                                //                                 Color>(
+                                //                             Colors
+                                //                                 .grey[850]),
+                                //                   ),
+                                //                 )
+                                //               : Stack(
+                                //                   children: [
+                                //                     Positioned(
+                                //                         top: -15,
+                                //                         right: -15,
+                                //                         child: IconButton(
+                                //                             icon: Icon(
+                                //                               Icons
+                                //                                   .edit_outlined,
+                                //                               color: Colors
+                                //                                   .black
+                                //                                   .withOpacity(
+                                //                                       0.6),
+                                //                             ),
+                                //                             splashRadius:
+                                //                                 20,
+                                //                             iconSize: 15,
+                                //                             onPressed:
+                                //                                 () async {
+                                //                               await FirebaseFirestore
+                                //                                   .instance
+                                //                                   .collection(
+                                //                                       "users")
+                                //                                   .doc(
+                                //                                       authId)
+                                //                                   .collection(
+                                //                                       "planilha")
+                                //                                   .doc(
+                                //                                       treinoId)
+                                //                                   .collection(
+                                //                                       "exercícios")
+                                //                                   .doc(snapshot
+                                //                                       .data
+                                //                                       .docs[
+                                //                                           index]
+                                //                                       .id)
+                                //                                   .collection(
+                                //                                       "sets")
+                                //                                   .get()
+                                //                                   .then(
+                                //                                       (snapshot) {
+                                //                                 Navigator.push(
+                                //                                     context,
+                                //                                     SlideLeftRoute(
+                                //                                         page: EditExercise(
+                                //                                             treinoId,
+                                //                                             title,
+                                //                                             snapshot.docs[1],
+                                //                                             2,
+                                //                                             authId,
+                                //                                             padding)));
+                                //                               });
+                                //                             })),
+                                //                     Center(
+                                //                       child: AutoSizeText(
+                                //                         snapshot
+                                //                             .data
+                                //                             .docs[index]
+                                //                                 ["title1"]
+                                //                             .toString()
+                                //                             .toUpperCase(),
+                                //                         maxLines: 3,
+                                //                         style: TextStyle(
+                                //                             height: 1.1,
+                                //                             fontSize: 15,
+                                //                             fontFamily:
+                                //                                 "GothamBold"),
+                                //                         textAlign: TextAlign
+                                //                             .center,
+                                //                       ),
+                                //                     ),
+                                //                   ],
+                                //                 ),
+                                //         ),
+                                //       ),
+                                //       Text(
+                                //         "+",
+                                //         style: TextStyle(
+                                //             color: Colors.white,
+                                //             fontFamily: "GothamBold",
+                                //             fontSize: 30),
+                                //       ),
+                                //       InkWell(
+                                //         onTap: () async {
+                                //           await FirebaseFirestore.instance
+                                //               .collection("users")
+                                //               .doc(authId)
+                                //               .collection("planilha")
+                                //               .doc(treinoId)
+                                //               .collection("exercícios")
+                                //               .doc(snapshot
+                                //                   .data.docs[index].id)
+                                //               .collection("sets")
+                                //               .get()
+                                //               .then((snapshot) {
+                                //             _displayExerciseModalBottom(
+                                //                 context,
+                                //                 snapshot.docs[0]["video"],
+                                //                 snapshot.docs[0]["obs"]);
+                                //           });
+                                //         },
+                                //         radius: 20,
+                                //         borderRadius: const BorderRadius
+                                //                 .all(
+                                //             const Radius.circular(10.0)),
+                                //         child: Container(
+                                //           padding: EdgeInsets.all(5),
+                                //           margin: EdgeInsets.symmetric(
+                                //               vertical: 10, horizontal: 10),
+                                //           height: 100,
+                                //           width: MediaQuery.of(context)
+                                //                   .size
+                                //                   .width *
+                                //               0.35,
+                                //           decoration: BoxDecoration(
+                                //             borderRadius: new BorderRadius
+                                //                     .all(
+                                //                 new Radius.circular(10.0)),
+                                //             color: Theme.of(context)
+                                //                 .primaryColor,
+                                //             boxShadow: [
+                                //               BoxShadow(
+                                //                 color: Colors.black
+                                //                     .withOpacity(0.4),
+                                //                 spreadRadius: 3,
+                                //                 blurRadius: 7,
+                                //                 offset: Offset(2,
+                                //                     5), // changes position of shadow
+                                //               ),
+                                //             ],
+                                //           ),
+                                //           child: _isChanging
+                                //               ? Center(
+                                //                   child:
+                                //                       CircularProgressIndicator(
+                                //                     valueColor:
+                                //                         new AlwaysStoppedAnimation<
+                                //                                 Color>(
+                                //                             Colors
+                                //                                 .grey[850]),
+                                //                   ),
+                                //                 )
+                                //               : Stack(
+                                //                   children: [
+                                //                     Positioned(
+                                //                         top: -15,
+                                //                         right: -15,
+                                //                         child: IconButton(
+                                //                             icon: Icon(
+                                //                               Icons
+                                //                                   .edit_outlined,
+                                //                               color: Colors
+                                //                                   .black
+                                //                                   .withOpacity(
+                                //                                       0.6),
+                                //                             ),
+                                //                             splashRadius:
+                                //                                 20,
+                                //                             iconSize: 15,
+                                //                             onPressed:
+                                //                                 () async {
+                                //                               await FirebaseFirestore
+                                //                                   .instance
+                                //                                   .collection(
+                                //                                       "users")
+                                //                                   .doc(
+                                //                                       authId)
+                                //                                   .collection(
+                                //                                       "planilha")
+                                //                                   .doc(
+                                //                                       treinoId)
+                                //                                   .collection(
+                                //                                       "exercícios")
+                                //                                   .doc(snapshot
+                                //                                       .data
+                                //                                       .docs[
+                                //                                           index]
+                                //                                       .id)
+                                //                                   .collection(
+                                //                                       "sets")
+                                //                                   .get()
+                                //                                   .then(
+                                //                                       (snapshot) {
+                                //                                 Navigator.push(
+                                //                                     context,
+                                //                                     SlideLeftRoute(
+                                //                                         page: EditExercise(
+                                //                                             treinoId,
+                                //                                             title,
+                                //                                             snapshot.docs[0],
+                                //                                             2,
+                                //                                             authId,
+                                //                                             padding)));
+                                //                               });
+                                //                             })),
+                                //                     Center(
+                                //                       child: AutoSizeText(
+                                //                         snapshot
+                                //                             .data
+                                //                             .docs[index]
+                                //                                 ["title2"]
+                                //                             .toString()
+                                //                             .toUpperCase(),
+                                //                         maxLines: 3,
+                                //                         style: TextStyle(
+                                //                             height: 1.1,
+                                //                             fontSize: 15,
+                                //                             fontFamily:
+                                //                                 "GothamBold"),
+                                //                         textAlign: TextAlign
+                                //                             .center,
+                                //                       ),
+                                //                     ),
+                                //                   ],
+                                //                 ),
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
                               ],
                             ),
                           ),
@@ -1160,6 +1034,277 @@ class _TreinoScreenState extends State<TreinoScreen> {
             }
           },
         ),
+      ),
+    );
+  }
+
+  InkWell exercicioContainerUni(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, int index) {
+    return InkWell(
+      onTap: () {
+        _displayExerciseModalBottom(
+          context,
+          snapshot.data.docs[index]["video"],
+          snapshot.data.docs[index]["series"].toString(),
+          snapshot.data.docs[index]["reps"].toString(),
+          snapshot.data.docs[index]["peso"].toString(),
+        );
+      },
+      splashColor: Colors.grey[900],
+      borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        height: 150,
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          borderRadius: new BorderRadius.all(new Radius.circular(12.0)),
+          color: Theme.of(context).primaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              spreadRadius: 4,
+              blurRadius: 2,
+              offset: Offset(1, 5), // changes position of shadow
+            ),
+          ],
+        ),
+        child: _isChanging
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor:
+                      new AlwaysStoppedAnimation<Color>(Colors.grey[850]),
+                ),
+              )
+            : Stack(
+                children: [
+                  Positioned(
+                      right: -5,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.edit_outlined,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                          iconSize: 20,
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                SlideLeftRoute(
+                                    page: EditExercise(
+                                        treinoId,
+                                        title,
+                                        snapshot.data.docs[index],
+                                        1,
+                                        authId,
+                                        padding)));
+                          })),
+                  Positioned(
+                      left: 15,
+                      top: 15,
+                      child: Text(
+                        (index + 1).toString() + 'º',
+                        style:
+                            TextStyle(fontSize: 14, fontFamily: "GothamBold"),
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: AutoSizeText(
+                            snapshot.data.docs[index]["title"]
+                                .toString()
+                                .toUpperCase(),
+                            maxLines: 3,
+                            style: TextStyle(
+                                fontSize: 20, fontFamily: "GothamBold"),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                Text("Séries",
+                                    style: TextStyle(
+                                        fontSize: 20, fontFamily: "Gotham")),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(snapshot.data.docs[index]["series"],
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: "GothamBook")),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text("Repetições",
+                                    style: TextStyle(
+                                        fontSize: 20, fontFamily: "Gotham")),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(snapshot.data.docs[index]["reps"],
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: "GothamBook")),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Text("Carga",
+                                    style: TextStyle(
+                                        fontSize: 20, fontFamily: "Gotham")),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(
+                                    "${snapshot.data.docs[index]["peso"].toString()}kg",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontFamily: "GothamBook")),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Container setContainerColumn(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, int index) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          // gradient:
+          //     new LinearGradient(stops: [
+          //   0.02,
+          //   0.02
+          // ], colors: [
+          //   Color(0xFFeb2020),
+          // ]),
+          borderRadius: new BorderRadius.all(const Radius.circular(12.0)),
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 8,
+                spreadRadius: 0,
+                color: Colors.black.withOpacity(0.3),
+                offset: Offset(0, 3))
+          ]),
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Stack(
+        children: [
+          Positioned(
+              left: 0,
+              top: 0,
+              child: Text(
+                (index + 1).toString() + 'º',
+                style: TextStyle(fontSize: 14, fontFamily: "GothamBold"),
+              )),
+          FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(authId)
+                  .collection("planilha")
+                  .doc(treinoId)
+                  .collection("exercícios")
+                  .doc(snapshot.data.docs[index].id)
+                  .collection("sets")
+                  .get(),
+              builder: (context, snapshot2) {
+                if (!snapshot2.hasData)
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            new AlwaysStoppedAnimation<Color>(Colors.grey[850]),
+                      ),
+                    ),
+                  );
+                else if (snapshot2.data.docs.length <= 0) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    child: Center(
+                      child: AutoSizeText(
+                          "Esse set ainda não possui nenhum exercício",
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: "Gotham",
+                              fontSize: 20)),
+                    ),
+                  );
+                } else
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: snapshot2.data.docs.length,
+                      itemBuilder: (context, index2) {
+                        return Column(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                _displayExerciseModalBottom(
+                                  context,
+                                  snapshot2.data.docs[index2]["video"],
+                                  snapshot2.data.docs[index2]["series"]
+                                      .toString(),
+                                  snapshot2.data.docs[index2]["reps"]
+                                      .toString(),
+                                  snapshot2.data.docs[index2]["peso"]
+                                      .toString(),
+                                );
+                              },
+                              child: AutoSizeText(
+                                snapshot2.data.docs[index2]['title']
+                                    .toString()
+                                    .toUpperCase(),
+                                textAlign: TextAlign.center,
+                                maxLines: 3,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: "GothamBold",
+                                    fontSize: 20),
+                              ),
+                            ),
+                            index2 + 1 != snapshot2.data.docs.length
+                                ? AutoSizeText(
+                                    '+',
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.4),
+                                        fontFamily: "Gotham",
+                                        fontSize: 20),
+                                  )
+                                : Container(),
+                          ],
+                        );
+                      });
+              }),
+        ],
       ),
     );
   }

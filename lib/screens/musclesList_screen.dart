@@ -232,19 +232,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
             });
           },
         ),
-        IconButton(
-            icon: Icon(Icons.filter_list_rounded),
-            onPressed: () {
-              setState(() {
-                if (_containerHeight == 0) {
-                  _containerHeight = 120;
-                  _containerMargin = 20;
-                } else {
-                  _containerHeight = 0;
-                  _containerMargin = 0;
-                }
-              });
-            })
       ];
     }
     return <Widget>[
@@ -272,13 +259,13 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(5),
-        margin: EdgeInsets.all(3),
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 30),
+        margin: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
         decoration: BoxDecoration(
           color: _selTypeSearch == filter
               ? Theme.of(context).primaryColor
               : Theme.of(context).primaryColor.withOpacity(0.6),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.7),
@@ -291,7 +278,7 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
         alignment: Alignment.center,
         child: Text(
           "$title",
-          style: TextStyle(fontFamily: "GothamBook", fontSize: 12),
+          style: TextStyle(fontFamily: "GothamBook", fontSize: 16),
           textAlign: TextAlign.center,
         ),
       ),
@@ -415,32 +402,25 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
           backgroundColor: Color(0xff313131),
           body: Column(
             children: [
-              AnimatedContainer(
-                margin: EdgeInsets.only(top: _containerMargin),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: _containerHeight,
-                duration: Duration(seconds: 1),
-                curve: Curves.fastOutSlowIn,
-                child: GridView(
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 0.5,
-                      childAspectRatio: 0.4),
-                  children: [
-                    _filterButtons("Título", "title"),
-                    _filterButtons("Bíceps", "biceps"),
-                    _filterButtons("Peitoral", "peitoral"),
-                    _filterButtons("Fazer em casa", "home_exe"),
-                    _filterButtons("Costas", "costas"),
-                    _filterButtons("Tríceps", "triceps"),
-                    _filterButtons("Abdomen", "abdomen"),
-                    _filterButtons("Pernas", "pernas"),
-                    _filterButtons("Ombros", "ombros"),
-                  ],
-                ),
-              ),
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  height: 60,
+                  child: ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    physics: BouncingScrollPhysics(),
+                    children: [
+                      _filterButtons("Título", "title"),
+                      _filterButtons("Bíceps", "biceps"),
+                      _filterButtons("Peitoral", "peitoral"),
+                      _filterButtons("Fazer em casa", "home_exe"),
+                      _filterButtons("Costas", "costas"),
+                      _filterButtons("Tríceps", "triceps"),
+                      _filterButtons("Abdomen", "abdomen"),
+                      _filterButtons("Pernas", "pernas"),
+                      _filterButtons("Ombros", "ombros"),
+                    ],
+                  )),
               Expanded(
                   child: ListView.builder(
                       shrinkWrap: true,
