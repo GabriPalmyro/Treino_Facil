@@ -470,6 +470,7 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
                 .collection("users")
                 .doc(authId)
                 .collection("planilha")
+                .orderBy("title")
                 .get(),
             builder: (context, snapshot) {
               if (!snapshot.hasData)
@@ -501,7 +502,7 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
                 );
               } else {
                 return SafeArea(
-                  child: Column(
+                  child: ListView(
                     children: [
                       ListView.builder(
                           shrinkWrap: true,
@@ -509,104 +510,120 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
                           padding: EdgeInsets.all(5),
                           itemCount: snapshot.data.docs.length,
                           itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    settings: RouteSettings(name: "/treino"),
-                                    builder: (context) => TreinoScreen(
-                                        snapshot.data.docs[index]["title"],
-                                        snapshot.data.docs[index].id,
-                                        authId,
-                                        padding)));
-                              },
-                              child: Stack(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.all(10),
-                                        height: 130,
-                                        decoration: BoxDecoration(
-                                          borderRadius: new BorderRadius.all(
-                                              new Radius.circular(12.0)),
-                                          color: Theme.of(context).primaryColor,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.4),
-                                              spreadRadius: 3,
-                                              blurRadius: 7,
-                                              offset: Offset(2,
-                                                  5), // changes position of shadow
-                                            ),
-                                          ],
+                            return Column(
+                              children: [
+                                index != 0 &&
+                                        index % 2 == 0 &&
+                                        index != snapshot.data.docs.length
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        height: 80,
+                                        child: NativeAdmob(
+                                          adUnitID: nativeAdUnitId(),
+                                          loading: Container(),
+                                          error: Text("Failed to load the ad"),
+                                          controller: _nativeAdController,
+                                          type: NativeAdmobType.banner,
                                         ),
-                                        child: Container(
-                                          margin: EdgeInsets.only(
-                                              left: 10, right: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                snapshot
-                                                    .data.docs[index]["title"]
-                                                    .toString()
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                    fontSize: 25,
-                                                    fontFamily: "GothamBold"),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Divider(),
-                                              Text(
+                                      )
+                                    : Container(),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            settings:
+                                                RouteSettings(name: "/treino"),
+                                            builder: (context) => TreinoScreen(
                                                 snapshot.data.docs[index]
-                                                    ["description"],
-                                                style: TextStyle(
-                                                    fontSize: 22,
-                                                    fontFamily: "GothamBook"),
-                                                textAlign: TextAlign.center,
+                                                    ["title"],
+                                                snapshot.data.docs[index].id,
+                                                authId,
+                                                padding)));
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.all(10),
+                                            height: 130,
+                                            decoration: BoxDecoration(
+                                              borderRadius: new BorderRadius
+                                                      .all(
+                                                  new Radius.circular(12.0)),
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.4),
+                                                  spreadRadius: 3,
+                                                  blurRadius: 7,
+                                                  offset: Offset(2,
+                                                      5), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            child: Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 10, right: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    snapshot.data
+                                                        .docs[index]["title"]
+                                                        .toString()
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontSize: 25,
+                                                        fontFamily:
+                                                            "GothamBold"),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  Divider(),
+                                                  Text(
+                                                    snapshot.data.docs[index]
+                                                        ["description"],
+                                                    style: TextStyle(
+                                                        fontSize: 22,
+                                                        fontFamily:
+                                                            "GothamBook"),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ],
                                               ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
+                                      Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: IconButton(
+                                              icon: Icon(
+                                                Icons.edit_outlined,
+                                                color: Colors.black
+                                                    .withOpacity(0.8),
+                                              ),
+                                              splashRadius: 1,
+                                              iconSize: 20,
+                                              onPressed: () {
+                                                _displayEditModalBottom(context,
+                                                    snapshot.data.docs[index]);
+                                              })),
                                     ],
                                   ),
-                                  Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: IconButton(
-                                          icon: Icon(
-                                            Icons.edit_outlined,
-                                            color:
-                                                Colors.black.withOpacity(0.8),
-                                          ),
-                                          splashRadius: 1,
-                                          iconSize: 20,
-                                          onPressed: () {
-                                            _displayEditModalBottom(context,
-                                                snapshot.data.docs[index]);
-                                          })),
-                                ],
-                              ),
+                                ),
+                              ],
                             );
                           }),
                       SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        height: 80,
-                        child: NativeAdmob(
-                          adUnitID: nativeAdUnitId(),
-                          loading: Container(),
-                          error: Text("Failed to load the ad"),
-                          controller: _nativeAdController,
-                          type: NativeAdmobType.banner,
-                        ),
+                        height: 100,
                       ),
                     ],
                   ),

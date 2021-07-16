@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/exerciseDetail_screen.dart';
+import 'package:tabela_treino/screens/visualizarExercicio.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
@@ -39,8 +40,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
       this.qntdExe, this.authId, this.title, this.padding);
 
   //container animado controles
-  double _containerHeight = 0;
-  double _containerMargin = 0;
 
   // lists
   bool _isSearching = false;
@@ -222,8 +221,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
             if (_searchController == null || _searchController.text.isEmpty) {
               setState(() {
                 _isSearching = false;
-                _containerHeight = 0;
-                _containerMargin = 0;
               });
               return;
             }
@@ -259,13 +256,13 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 30),
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 20),
         margin: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
         decoration: BoxDecoration(
           color: _selTypeSearch == filter
               ? Theme.of(context).primaryColor
               : Theme.of(context).primaryColor.withOpacity(0.6),
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.7),
@@ -283,66 +280,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
         ),
       ),
     );
-  }
-
-  String _calculateProgress(ImageChunkEvent loadingProgress) {
-    return ((loadingProgress.cumulativeBytesLoaded * 100) /
-            loadingProgress.expectedTotalBytes)
-        .toStringAsFixed(2);
-  }
-
-  Future<void> _displayExerciseModalBottom(
-      BuildContext context, DocumentSnapshot exercise) async {
-    return showModalBottomSheet(
-        backgroundColor: Colors.grey[850],
-        context: context,
-        builder: (context) {
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 15),
-            height: 500,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 70),
-              child: AspectRatio(
-                aspectRatio: 0.5,
-                child: Image.network(exercise["video"], loadingBuilder:
-                    (BuildContext context, Widget child,
-                        ImageChunkEvent loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Carregando exercício: ",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontFamily: "Gotham"),
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          "${_calculateProgress(loadingProgress)}%",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.amber,
-                              fontSize: 30,
-                              fontFamily: "GothamBold"),
-                        ),
-                      ),
-                    ],
-                  ));
-                }, fit: BoxFit.contain),
-              ),
-            ),
-          );
-        });
   }
 
   Future<void> _addRequest(BuildContext context) async {
@@ -410,15 +347,21 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                     scrollDirection: Axis.horizontal,
                     physics: BouncingScrollPhysics(),
                     children: [
+                      SizedBox(
+                        width: 12,
+                      ),
                       _filterButtons("Título", "title"),
-                      _filterButtons("Bíceps", "biceps"),
-                      _filterButtons("Peitoral", "peitoral"),
                       _filterButtons("Fazer em casa", "home_exe"),
-                      _filterButtons("Costas", "costas"),
-                      _filterButtons("Tríceps", "triceps"),
                       _filterButtons("Abdomen", "abdomen"),
-                      _filterButtons("Pernas", "pernas"),
+                      _filterButtons("Bíceps", "biceps"),
+                      _filterButtons("Costas", "costas"),
                       _filterButtons("Ombros", "ombros"),
+                      _filterButtons("Peitoral", "peitoral"),
+                      _filterButtons("Pernas", "pernas"),
+                      _filterButtons("Tríceps", "triceps"),
+                      SizedBox(
+                        width: 12,
+                      ),
                     ],
                   )),
               Expanded(
@@ -444,8 +387,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                               onTap: () async {
                                 setState(() {
                                   _isSearching = false;
-                                  _containerHeight = 0;
-                                  _containerMargin = 0;
                                 });
                                 if (addMode) {
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -466,14 +407,21 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                     await _addRequest(context);
                                     adClick = 0;
 
-                                    _displayExerciseModalBottom(
-                                        context, _resultList[index]);
+                                    showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (_) => VisualizarExercicio(
+                                            _resultList[index]["video"]));
 
                                     interstitialAdMuscle.load();
                                   } else {
                                     adClick++;
-                                    _displayExerciseModalBottom(
-                                        context, _resultList[index]);
+                                    showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context,
+                                        //isScrollControlled: true,
+                                        builder: (_) => VisualizarExercicio(
+                                            _resultList[index]["video"]));
                                   }
                                 }
                               },
@@ -483,7 +431,7 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                 height: 120,
                                 decoration: BoxDecoration(
                                   borderRadius: new BorderRadius.all(
-                                      new Radius.circular(10.0)),
+                                      new Radius.circular(5.0)),
                                   color: Theme.of(context).primaryColor,
                                   boxShadow: [
                                     BoxShadow(

@@ -128,288 +128,11 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                       SizedBox(
                         height: 30,
                       ),
-                      Container(
-                        //height: MediaQuery.of(context).size.height * 0.5,
-                        width: MediaQuery.of(context).size.height * 0.7,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              new BorderRadius.all(new Radius.circular(10.0)),
-                          color: Theme.of(context).primaryColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              spreadRadius: 3,
-                              blurRadius: 7,
-                              offset:
-                                  Offset(2, 5), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              "Alunos conectados".toUpperCase(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.grey[850],
-                                  fontFamily: "Gotham",
-                                  fontSize: 20),
-                            ),
-                            Divider(
-                              thickness: 0.8,
-                              color: Colors.grey[900].withOpacity(0.7),
-                            ),
-                            ListView.builder(
-                                shrinkWrap: true,
-                                physics: BouncingScrollPhysics(),
-                                padding: EdgeInsets.all(5),
-                                itemCount: snapshot.data.docs.length,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        child: Container(
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50),
-                                                    child: Container(
-                                                      height: 45,
-                                                      width: 45,
-                                                      decoration:
-                                                          new BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 3,
-                                                            offset: Offset(0,
-                                                                2), // changes position of shadow
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: Image.network(
-                                                        snapshot.data
-                                                                .docs[index]
-                                                            ["client_photo"],
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 5,
-                                                        vertical: 5),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        AutoSizeText(
-                                                          snapshot.data
-                                                                  .docs[index]
-                                                              ["client_name"],
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontFamily:
-                                                                  "Gotham",
-                                                              fontSize: 15),
-                                                        ),
-                                                        AutoSizeText(
-                                                          snapshot.data
-                                                                  .docs[index]
-                                                              ["client_email"],
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontFamily:
-                                                                  "GothamThin",
-                                                              fontSize: 12),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  TextButton(
-                                                      style: ButtonStyle(
-                                                        overlayColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(Colors
-                                                                    .white
-                                                                    .withOpacity(
-                                                                        0.3)),
-                                                      ),
-                                                      onPressed: () {
-                                                        print(
-                                                            "${snapshot.data.docs[index]["client_Id"]}");
-                                                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                                            settings: RouteSettings(
-                                                                name:
-                                                                    "/planilhas"),
-                                                            builder: (context) => PlanilhaScreen(
-                                                                snapshot.data
-                                                                            .docs[
-                                                                        index][
-                                                                    "client_Id"],
-                                                                snapshot.data
-                                                                            .docs[
-                                                                        index][
-                                                                    "client_name"],
-                                                                padding)));
-                                                      },
-                                                      child: Text(
-                                                        "Acessar Planilhas",
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors
-                                                                .grey[700]),
-                                                      ))
-                                                ],
-                                              ),
-                                              Divider(
-                                                color: Colors.grey[900],
-                                                thickness: 0.5,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          ],
-                        ),
-                      ),
+                      alunosConectadosContainer(context, snapshot),
                       SizedBox(
                         height: 30,
                       ),
-                      Container(
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          width: MediaQuery.of(context).size.height * 0.7,
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                new BorderRadius.all(new Radius.circular(10.0)),
-                            color: Theme.of(context).primaryColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                spreadRadius: 3,
-                                blurRadius: 7,
-                                offset:
-                                    Offset(2, 5), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Text(
-                                "Conecte-se a um aluno".toUpperCase(),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.grey[850],
-                                    fontFamily: "GothamBold",
-                                    fontSize: 20),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: TextField(
-                                  keyboardType: TextInputType.text,
-                                  controller: _clientController,
-                                  style: TextStyle(
-                                    color: Colors.grey[900],
-                                    fontSize: 18,
-                                    fontFamily: "GothamBook",
-                                  ),
-                                  enableInteractiveSelection: true,
-                                  decoration: InputDecoration(
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.grey[900]
-                                                .withOpacity(0.8)),
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.white),
-                                      ),
-                                      hintText: "E-mail do aluno",
-                                      hintStyle: TextStyle(
-                                          color: Colors.black.withOpacity(0.5),
-                                          fontFamily: "GothamBook",
-                                          fontSize: 15)),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  TextButton(
-                                      style: ButtonStyle(
-                                        overlayColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.red.withOpacity(0.3)),
-                                      ),
-                                      child: Text(
-                                        "Apagar",
-                                        style: TextStyle(
-                                            fontFamily: "GothamBook",
-                                            fontSize: 20,
-                                            color: Colors.red),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _clientController.text = "";
-                                        });
-                                      }),
-                                  TextButton(
-                                      style: ButtonStyle(
-                                        overlayColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.green.withOpacity(0.3)),
-                                      ),
-                                      child: Text(
-                                        "Enviar",
-                                        style: TextStyle(
-                                            fontFamily: "GothamBook",
-                                            fontSize: 20,
-                                            color: Colors.green),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _sendClientRequest();
-                                          _clientController.text = "";
-                                        });
-                                      })
-                                ],
-                              )
-                            ],
-                          )),
+                      conectarAlunoContainer(context),
                       SizedBox(
                         height: 60,
                       ),
@@ -417,6 +140,254 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                   );
                 }
               })),
+    );
+  }
+
+  Container conectarAlunoContainer(BuildContext context) {
+    return Container(
+        //height: MediaQuery.of(context).size.height * 0.2,
+        width: MediaQuery.of(context).size.height * 0.7,
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+          color: Theme.of(context).primaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset: Offset(2, 5), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              "Conecte-se a um aluno".toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.grey[850],
+                  fontFamily: "GothamBold",
+                  fontSize: 20),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 10, top: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      keyboardType: TextInputType.text,
+                      controller: _clientController,
+                      style: TextStyle(
+                        color: Colors.grey[900],
+                        fontSize: 18,
+                        fontFamily: "GothamBook",
+                      ),
+                      enableInteractiveSelection: true,
+                      decoration: InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey[900].withOpacity(0.8)),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          hintText: "E-mail do aluno",
+                          hintStyle: TextStyle(
+                              color: Colors.black.withOpacity(0.5),
+                              fontFamily: "GothamBook",
+                              fontSize: 15)),
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        color: Colors.black.withOpacity(0.6),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _clientController.text = "";
+                        });
+                      })
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 25, bottom: 10),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.green.withOpacity(0.8)),
+                      overlayColor: MaterialStateProperty.all<Color>(
+                          Colors.white.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      "Enviar",
+                      style: TextStyle(
+                          fontFamily: "GothamBook",
+                          fontSize: 20,
+                          color: Colors.white),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _sendClientRequest();
+                        _clientController.text = "";
+                      });
+                    }),
+              ),
+            )
+          ],
+        ));
+  }
+
+  Container alunosConectadosContainer(
+      BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return Container(
+      //height: MediaQuery.of(context).size.height * 0.5,
+      width: MediaQuery.of(context).size.height * 0.7,
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+        color: Theme.of(context).primaryColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            spreadRadius: 3,
+            blurRadius: 7,
+            offset: Offset(2, 5), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            "Alunos conectados".toUpperCase(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.grey[850], fontFamily: "Gotham", fontSize: 20),
+          ),
+          Divider(
+            thickness: 0.8,
+            color: Colors.grey[900].withOpacity(0.7),
+          ),
+          ListView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              padding: EdgeInsets.all(5),
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: Colors.black.withOpacity(0.4)))),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Container(
+                                height: 45,
+                                width: 45,
+                                decoration: new BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: Offset(
+                                          0, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Image.network(
+                                  snapshot.data.docs[index]["client_photo"],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 3,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    AutoSizeText(
+                                      snapshot.data.docs[index]["client_name"],
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: "Gotham",
+                                          fontSize: 15),
+                                    ),
+                                    AutoSizeText(
+                                      snapshot.data.docs[index]["client_email"],
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: "GothamThin",
+                                          fontSize: 12),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 3,
+                            child: TextButton(
+                                style: ButtonStyle(
+                                  overlayColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.white.withOpacity(0.3)),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          settings:
+                                              RouteSettings(name: "/planilhas"),
+                                          builder: (context) => PlanilhaScreen(
+                                              snapshot.data.docs[index]
+                                                  ["client_Id"],
+                                              snapshot.data.docs[index]
+                                                  ["client_name"],
+                                              padding)));
+                                },
+                                child: Text(
+                                  "Acessar Planilhas",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey[700]),
+                                )),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 12,
+                      )
+                    ],
+                  ),
+                );
+              }),
+        ],
+      ),
     );
   }
 }

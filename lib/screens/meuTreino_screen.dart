@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tabela_treino/exercicios_planilha/selectNovoExerc.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
 import 'package:tabela_treino/transition/transitions.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -162,16 +163,13 @@ class _TreinoScreenState extends State<TreinoScreen> {
             actions: <Widget>[
               // ignore: deprecated_member_use
               FlatButton(
-                color: Colors.white,
-                textColor: Colors.black,
+                textColor: Colors.white,
                 child: Text(
                   'CANCELAR',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
+                  Navigator.pop(context);
                 },
               ),
               // ignore: deprecated_member_use
@@ -195,7 +193,6 @@ class _TreinoScreenState extends State<TreinoScreen> {
                       backgroundColor: Colors.green,
                       duration: Duration(seconds: 2),
                     ));
-                    Navigator.pop(context);
                     Navigator.pop(context);
                   }).catchError((e) {
                     // ignore: deprecated_member_use
@@ -532,28 +529,49 @@ class _TreinoScreenState extends State<TreinoScreen> {
               backgroundColor: Colors.amber,
               child: Icon(
                 Icons.exposure_plus_1_rounded,
+                color: Colors.black,
               ),
               label: 'Uni-Set',
               labelBackgroundColor: Colors.amber,
               onTap: () async {
                 planLenght = await _lenghtExe();
-                Navigator.of(context).push(MaterialPageRoute(
-                    settings: RouteSettings(name: "/musculos"),
-                    builder: (context) => MuscleListScreen(true, 0, treinoId,
-                        null, planLenght, authId, title, padding)));
+
+                print("uni-set");
+                showModalBottomSheet(
+                    backgroundColor: Colors.white,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => NovoExercicioSel(true, 0, treinoId, null,
+                        planLenght, authId, title, padding)).then((value) {
+                  setState(() {});
+                });
               },
             ),
             SpeedDialChild(
               backgroundColor: Colors.amber,
-              child: Icon(Icons.exposure_plus_2_rounded),
+              child: Icon(
+                Icons.exposure_plus_2_rounded,
+                color: Colors.black,
+              ),
               label: 'Bi-Set',
               labelBackgroundColor: Colors.amber,
               onTap: () async {
                 planLenght = await _lenghtExe();
-                Navigator.of(context).push(MaterialPageRoute(
-                    settings: RouteSettings(name: "/musculos"),
-                    builder: (context) => MuscleListScreen(true, 1, treinoId,
-                        null, planLenght, authId, title, padding)));
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                        settings: RouteSettings(name: "/musculos"),
+                        builder: (context) => MuscleListScreen(
+                            true,
+                            1,
+                            treinoId,
+                            null,
+                            planLenght,
+                            authId,
+                            title,
+                            padding)))
+                    .then((value) {
+                  setState(() {});
+                });
               },
             ),
           ],
@@ -561,17 +579,10 @@ class _TreinoScreenState extends State<TreinoScreen> {
         appBar: AppBar(
           title: Text(
             "${title.toUpperCase()}",
-            style: TextStyle(fontSize: 25, fontFamily: "GothamBold"),
+            style: TextStyle(fontSize: 20, fontFamily: "GothamBold"),
           ),
           centerTitle: true,
           actions: [
-            IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) =>
-                          TreinoScreen(title, treinoId, authId, padding)));
-                }),
             IconButton(
               icon: Icon(
                 Icons.delete,
@@ -673,7 +684,9 @@ class _TreinoScreenState extends State<TreinoScreen> {
                                   .doc(treinoId)
                                   .collection("exercícios")
                                   .doc(snapshot.data.docs[index].id);
-                              _deleteExercise(context, dR, index);
+                              _deleteExercise(context, dR, index).then((value) {
+                                setState(() {});
+                              });
                             },
                             child: Row(
                               children: [
@@ -1063,8 +1076,8 @@ class _TreinoScreenState extends State<TreinoScreen> {
             BoxShadow(
               color: Colors.black.withOpacity(0.4),
               spreadRadius: 4,
-              blurRadius: 2,
-              offset: Offset(1, 5), // changes position of shadow
+              blurRadius: 4,
+              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -1102,8 +1115,10 @@ class _TreinoScreenState extends State<TreinoScreen> {
                       top: 15,
                       child: Text(
                         (index + 1).toString() + 'º',
-                        style:
-                            TextStyle(fontSize: 14, fontFamily: "GothamBold"),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "GothamBold",
+                        ),
                       )),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -1205,10 +1220,11 @@ class _TreinoScreenState extends State<TreinoScreen> {
           borderRadius: new BorderRadius.all(const Radius.circular(12.0)),
           boxShadow: [
             BoxShadow(
-                blurRadius: 8,
-                spreadRadius: 0,
-                color: Colors.black.withOpacity(0.3),
-                offset: Offset(0, 3))
+              color: Colors.black.withOpacity(0.4),
+              spreadRadius: 4,
+              blurRadius: 4,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
           ]),
       margin: EdgeInsets.all(10),
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),

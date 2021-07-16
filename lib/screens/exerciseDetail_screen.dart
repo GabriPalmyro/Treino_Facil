@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/screens/musclesList_screen.dart';
@@ -51,13 +56,17 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   bool _isInterstitialAdShow = false;
   int adClick = 0;
 
-  void _loadInterstitialAd() {
-    interstitialAdMuscle.load();
-  }
+  // ignore: unused_field
+  AdmobBanner _admobBanner;
+  final _nativeAdController = NativeAdmobController();
+  double _height = 0;
+  StreamSubscription _subscription;
 
   @override
   void initState() {
+    _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
     super.initState();
+
     _isInterstitialAdReady = false;
 
     interstitialAdMuscle = InterstitialAd(
@@ -65,6 +74,50 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
       listener: _onInterstitialAdEvent,
     );
     _loadInterstitialAd();
+
+    print(padding.toString() + " home tab pad");
+    _admobBanner = AdmobBanner(
+      adUnitId: bannerAdUnitId(),
+      adSize: AdmobBannerSize.BANNER,
+      listener: (e, e2) {
+        if (e == AdmobAdEvent.loaded) {
+          print("padding home tab 2 = loaded");
+        }
+        if (e == AdmobAdEvent.closed) {
+          _admobBanner = null;
+        }
+      },
+    );
+  }
+
+  void _onStateChanged(AdLoadState state) {
+    switch (state) {
+      case AdLoadState.loading:
+        setState(() {
+          _height = 0;
+        });
+        break;
+
+      case AdLoadState.loadCompleted:
+        setState(() {
+          _height = 90;
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    _nativeAdController.dispose();
+    super.dispose();
+  }
+
+  void _loadInterstitialAd() {
+    interstitialAdMuscle.load();
   }
 
   void _onInterstitialAdEvent(MobileAdEvent event) {
@@ -397,7 +450,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 ? IconButton(
                     icon: Icon(
                       Icons.refresh,
-                      color: Colors.grey[700],
+                      color: Colors.black.withOpacity(0.8),
                     ),
                     onPressed: () {
                       setState(() {
@@ -422,15 +475,16 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 "Execução",
                 style: TextStyle(
                   color: Colors.white,
-                  fontFamily: "Gotham",
-                  fontSize: 20,
+                  fontFamily: "GothamBook",
+                  fontSize: 18,
                 ),
                 textAlign: TextAlign.center,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 child: AspectRatio(
-                  aspectRatio: 1.5,
+                  aspectRatio: 1.8,
                   child: Image.network(exercise["video"], loadingBuilder:
                       (BuildContext context, Widget child,
                           ImageChunkEvent loadingProgress) {
@@ -481,8 +535,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
               ),
               Divider(
                 height: 5,
-                thickness: 3,
-                color: Theme.of(context).primaryColor,
+                thickness: 2,
+                color: Theme.of(context).primaryColor.withOpacity(0.6),
               ),
               Padding(
                 padding:
@@ -705,10 +759,21 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                     boxShadow: [
                       BoxShadow(
                           color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 3,
-                          blurRadius: 2,
-                          offset: Offset(0, 4))
+                          spreadRadius: 6,
+                          blurRadius: 8,
+                          offset: Offset(0, 3))
                     ]),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                height: _height,
+                child: NativeAdmob(
+                  adUnitID: nativeAdUnitId(),
+                  loading: Container(),
+                  error: Text("Failed to load the ad"),
+                  controller: _nativeAdController,
+                  type: NativeAdmobType.banner,
+                ),
               ),
               SizedBox(
                 height: 80,

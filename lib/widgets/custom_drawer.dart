@@ -201,6 +201,9 @@ class CustomDrawer extends StatelessWidget {
                           child: CircularProgressIndicator(),
                         ),
                 ),
+                SizedBox(
+                  height: 24,
+                ),
                 Container(
                   padding: EdgeInsets.only(left: 30),
                   child: Column(
@@ -223,7 +226,7 @@ class CustomDrawer extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Icon(
-                                Icons.home_outlined,
+                                Icons.home,
                                 size: 35,
                                 color: Theme.of(context).primaryColor,
                               ),
@@ -395,7 +398,7 @@ class CustomDrawer extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Icon(
-                                Icons.person_outline,
+                                Icons.person,
                                 size: 35,
                                 color: Theme.of(context).primaryColor,
                               ),

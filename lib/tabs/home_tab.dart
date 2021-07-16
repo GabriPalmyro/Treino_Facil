@@ -1,19 +1,20 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:tabela_treino/ads/ads_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/screens/meuTreino_screen.dart';
 import 'package:tabela_treino/screens/musclesList_screen.dart';
 import 'package:tabela_treino/screens/tokenPersonal_screen.dart';
 import 'package:tabela_treino/screens/tokenUser_screen.dart';
 import 'package:tabela_treino/tabs/planilha_tab.dart';
+import 'package:tabela_treino/transition/transitions.dart';
+import 'package:tabela_treino/treinos_prontos/lista_treinos.dart';
+import 'package:tabela_treino/treinos_prontos/menuTF_screen.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:flutter_native_admob/native_admob_controller.dart';
 
 import 'dart:async';
@@ -49,26 +50,26 @@ class _HomeTabState extends State<HomeTab> {
     getPlanSnapshots();
 
     //print(padding.toString() + " home tab pad");
-    _admobBanner = AdmobBanner(
-      adUnitId: bannerAdUnitId(),
-      adSize: AdmobBannerSize.BANNER,
-      listener: (e, e2) {
-        if (e == AdmobAdEvent.loaded) {
-          print("padding home tab 2 = loaded");
-        }
-        if (e == AdmobAdEvent.closed) {
-          _admobBanner = null;
-        }
-      },
-    );
+    // _admobBanner = AdmobBanner(
+    //   adUnitId: bannerAdUnitId(),
+    //   adSize: AdmobBannerSize.BANNER,
+    //   listener: (e, e2) {
+    //     if (e == AdmobAdEvent.loaded) {
+    //       print("padding home tab 2 = loaded");
+    //     }
+    //     if (e == AdmobAdEvent.closed) {
+    //       _admobBanner = null;
+    //     }
+    //   },
+    // );
   }
 
-  @override
-  void dispose() {
-    _subscription.cancel();
-    _nativeAdController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _subscription.cancel();
+  //   _nativeAdController.dispose();
+  //   super.dispose();
+  // }
 
   void _onStateChanged(AdLoadState state) {
     switch (state) {
@@ -176,7 +177,7 @@ class _HomeTabState extends State<HomeTab> {
                                   "Vamos treinar?",
                                   style: TextStyle(
                                       fontFamily: "GothamThin",
-                                      fontSize: 22,
+                                      fontSize: 20,
                                       color: Colors.white),
                                 ),
                               ],
@@ -184,59 +185,6 @@ class _HomeTabState extends State<HomeTab> {
                           ],
                         )),
                   ],
-                ),
-                SizedBox(
-                  height: _planilhaList.isEmpty ? 10 : 30,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MuscleListScreen(false, 0, null,
-                            null, 0, model.firebaseUser.uid, null, padding)));
-                  },
-                  child: Container(
-                      alignment: Alignment.topLeft,
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.only(top: 15, left: 20),
-                      height: 130,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            new BorderRadius.all(new Radius.circular(12.0)),
-                        color: Theme.of(context).primaryColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.4),
-                            spreadRadius: 3,
-                            blurRadius: 7,
-                            offset: Offset(2, 5), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AutoSizeText(
-                            "Biblioteca de exercícios",
-                            style: TextStyle(
-                                color: Colors.grey[900],
-                                fontFamily: "GothamBold",
-                                fontStyle: FontStyle.italic,
-                                fontSize: 25),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          AutoSizeText(
-                            "Veja a execução e os movimentos da nossa lista de exercícios",
-                            maxLines: 3,
-                            style: TextStyle(
-                                color: Colors.grey[900],
-                                fontFamily: "Gotham",
-                                fontStyle: FontStyle.italic,
-                                fontSize: 20),
-                          ),
-                        ],
-                      )),
                 ),
                 SizedBox(
                   height: _planilhaList.isEmpty ? 10 : 20,
@@ -276,221 +224,303 @@ class _HomeTabState extends State<HomeTab> {
                               ),
                             ),
                           )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20),
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            settings: RouteSettings(
-                                                name: "/planilhas"),
-                                            builder: (context) =>
-                                                PlanilhaScreen(
-                                                    model.firebaseUser.uid,
-                                                    model.userData["name"],
-                                                    padding)));
-                                  },
-                                  child: Text(
-                                    "Minhas planilhas",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "GothamBook",
-                                        fontSize: 22),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Container(
-                                height: 100.0,
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: BouncingScrollPhysics(),
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: _planilhaList.length,
-                                    itemBuilder: (context, index) {
-                                      return InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    settings: RouteSettings(
-                                                        name: "/treino"),
-                                                    builder: (context) =>
-                                                        TreinoScreen(
-                                                            _planilhaList[index]
-                                                                ["title"],
-                                                            _planilhaList[index]
-                                                                .id,
-                                                            _auth.currentUser
-                                                                .uid,
-                                                            padding)));
-                                          },
-                                          child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 5.0),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 20, vertical: 20),
-                                              decoration: BoxDecoration(
-                                                borderRadius: new BorderRadius
-                                                        .all(
-                                                    new Radius.circular(10.0)),
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.4),
-                                                    spreadRadius: 3,
-                                                    blurRadius: 7,
-                                                    offset: Offset(2,
-                                                        5), // changes position of shadow
-                                                  ),
-                                                ],
+                        : Container(
+                            height: 140.0,
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: _planilhaList.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                settings: RouteSettings(
+                                                    name: "/treino"),
+                                                builder: (context) =>
+                                                    TreinoScreen(
+                                                        _planilhaList[index]
+                                                            ["title"],
+                                                        _planilhaList[index].id,
+                                                        _auth.currentUser.uid,
+                                                        padding)));
+                                      },
+                                      child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 10.0, vertical: 20),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 20),
+                                          decoration: BoxDecoration(
+                                            borderRadius: new BorderRadius.all(
+                                                new Radius.circular(10.0)),
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                                spreadRadius: 4,
+                                                blurRadius: 8,
+                                                offset: Offset(0,
+                                                    4), // changes position of shadow
                                               ),
-                                              child: Container(
-                                                margin: EdgeInsets.only(
-                                                    left: 10, right: 10),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      _planilhaList[index]
-                                                              ["title"]
-                                                          .toString()
-                                                          .toUpperCase(),
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontFamily:
-                                                              "GothamBold"),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                    Divider(
-                                                      thickness: 1.5,
-                                                    ),
-                                                    Text(
-                                                      _planilhaList[index]
-                                                          ["description"],
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontFamily:
-                                                              "GothamBook"),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                                  ],
+                                            ],
+                                          ),
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                                left: 10, right: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  _planilhaList[index]["title"]
+                                                      .toString()
+                                                      .toUpperCase(),
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontFamily: "GothamBold"),
+                                                  textAlign: TextAlign.center,
                                                 ),
-                                              )));
-                                    }),
-                              )
-                            ],
+                                                Divider(
+                                                  color: Colors.black,
+                                                  thickness: 1.5,
+                                                ),
+                                                Text(
+                                                  _planilhaList[index]
+                                                      ["description"],
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: "GothamBook"),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                          )));
+                                }),
                           ),
                 SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  height: _height,
-                  child: NativeAdmob(
-                    adUnitID: nativeAdUnitId(),
-                    loading: Container(),
-                    error: Text("Failed to load the ad"),
-                    controller: _nativeAdController,
-                    type: NativeAdmobType.banner,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
+                  height: 12,
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (model.userData["personal_type"]) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              TokenPersonalScreen(model, padding)));
-                    } else {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => TokenScreen(model, padding)));
-                    }
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MuscleListScreen(false, 0, null,
+                            null, 0, model.firebaseUser.uid, null, padding)));
                   },
                   child: Container(
-                    alignment: Alignment.topLeft,
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.only(
-                        top: 15, left: 20, right: 10, bottom: 40),
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          new BorderRadius.all(new Radius.circular(20.0)),
-                      color: Theme.of(context).primaryColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          spreadRadius: 3,
-                          blurRadius: 7,
-                          offset: Offset(2, 5), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: !model.userData["personal_type"]
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Meu Personal Trainer",
-                                style: TextStyle(
-                                    color: Colors.grey[900],
-                                    fontFamily: "GothamBold",
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 25),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              AutoSizeText(
-                                "Veja pedidos de conexão ou corte conexão com seu Personal Trainer",
-                                maxLines: 3,
-                                style: TextStyle(
-                                    color: Colors.grey[900],
-                                    fontFamily: "Gotham",
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 20),
-                              ),
-                            ],
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Controle de alunos",
-                                style: TextStyle(
-                                    color: Colors.grey[900],
-                                    fontFamily: "GothamBold",
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 25),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              AutoSizeText(
-                                "Adicione, remova ou edite a planilha de seus alunos",
-                                maxLines: 3,
-                                style: TextStyle(
-                                    color: Colors.grey[900],
-                                    fontFamily: "Gotham",
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 22),
+                      alignment: Alignment.topLeft,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding:
+                          const EdgeInsets.only(top: 15, left: 20, bottom: 20),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            new BorderRadius.all(new Radius.circular(10.0)),
+                        color: Theme.of(context).primaryColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.4),
+                            spreadRadius: 3,
+                            blurRadius: 8,
+                            offset: Offset(0, 4), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            "Biblioteca de exercícios",
+                            style: TextStyle(
+                                color: Colors.grey[900],
+                                fontFamily: "GothamBold",
+                                fontSize: 25),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          AutoSizeText(
+                            "Veja a execução e os movimentos da nossa lista de mais de 100 exercícios",
+                            maxLines: 3,
+                            style: TextStyle(
+                                color: Colors.grey[900],
+                                fontFamily: "GothamBook",
+                                fontSize: 20),
+                          ),
+                        ],
+                      )),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Container(
+                  height: 200,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    physics: BouncingScrollPhysics(),
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+
+                          String levelChoice = prefs.getString('levelChoice');
+
+                          String levelName = prefs.getString('levelName') ??
+                              "iniciante"; //checa se o usuario já tem um nivel escolhido
+
+                          if (levelChoice == null) {
+                            showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                context: context,
+                                builder: (_) => MenuTreinosFaceis());
+                          } else {
+                            Navigator.push(
+                                context,
+                                SlideLeftRoute(
+                                    page: ListaTreinosProntos(
+                                  sexo: "masculino",
+                                  level: levelName,
+                                  idLevel: levelChoice,
+                                )));
+                          }
+                        },
+                        child: Container(
+                            height: 150,
+                            width: MediaQuery.of(context).size.width / 1.4,
+                            alignment: Alignment.topLeft,
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            padding: const EdgeInsets.only(
+                                top: 15, left: 20, right: 20, bottom: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(10.0)),
+                              color: Theme.of(context).primaryColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.4),
+                                  spreadRadius: 4,
+                                  blurRadius: 8,
+                                  offset: Offset(
+                                      0, 3), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AutoSizeText(
+                                  "Treinos Fáceis",
+                                  style: TextStyle(
+                                      color: Colors.grey[900],
+                                      fontFamily: "GothamBold",
+                                      fontSize: 25),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                AutoSizeText(
+                                  "Lista de treinos prontos para você usar no seu dia a dia",
+                                  maxLines: 4,
+                                  style: TextStyle(
+                                      color: Colors.grey[900],
+                                      fontFamily: "GothamBook",
+                                      fontSize: 20),
+                                ),
+                              ],
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          if (model.userData["personal_type"]) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    TokenPersonalScreen(model, padding)));
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    TokenScreen(model, padding)));
+                          }
+                        },
+                        child: Container(
+                          height: 150,
+                          width: MediaQuery.of(context).size.width / 1.3,
+                          alignment: Alignment.topLeft,
+                          padding: const EdgeInsets.only(
+                              top: 15, left: 20, right: 10, bottom: 30),
+                          margin: EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                new BorderRadius.all(new Radius.circular(10.0)),
+                            color: Theme.of(context).primaryColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                spreadRadius: 4,
+                                blurRadius: 8,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
                               ),
                             ],
                           ),
+                          child: !model.userData["personal_type"]
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Meu Personal Trainer",
+                                      style: TextStyle(
+                                          color: Colors.grey[900],
+                                          fontFamily: "GothamBold",
+                                          fontSize: 25),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    AutoSizeText(
+                                      "Veja pedidos de conexão ou corte conexão com seu Personal Trainer",
+                                      maxLines: 4,
+                                      style: TextStyle(
+                                          color: Colors.grey[900],
+                                          fontFamily: "GothamBook",
+                                          fontSize: 20),
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Controle de alunos",
+                                      style: TextStyle(
+                                          color: Colors.grey[900],
+                                          fontFamily: "GothamBold",
+                                          fontSize: 25),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    AutoSizeText(
+                                      "Adicione, remova ou edite a planilha de seus alunos",
+                                      maxLines: 3,
+                                      style: TextStyle(
+                                          color: Colors.grey[900],
+                                          fontFamily: "GothamBook",
+                                          fontSize: 22),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 24,
+                      )
+                    ],
                   ),
                 ),
                 SizedBox(

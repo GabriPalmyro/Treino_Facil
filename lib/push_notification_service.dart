@@ -15,7 +15,7 @@ class PushNotificationService {
     // you need to get the token and input to the Firebase console
     // https://console.firebase.google.com/project/YOUR_PROJECT_ID/notification/compose
     String token = await _fcm.getToken();
-    print("FirebaseMessaging token: $token");
+    //print("FirebaseMessaging token: $token");
 
     _fcm.getInitialMessage();
     _fcm.setAutoInitEnabled(true);

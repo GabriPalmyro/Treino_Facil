@@ -50,6 +50,7 @@ dependencies:
   firebase_messaging: 
   in_app_review: 
   flutter_native_splash: ^0.3.2
+  menu_button: ^1.4.2+1
   
 dev_dependencies:
   flutter_test:
