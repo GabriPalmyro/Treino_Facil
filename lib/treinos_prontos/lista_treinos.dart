@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/transition/transitions.dart';
 import 'package:tabela_treino/treinos_prontos/treinos_screen.dart';
-import 'package:menu_button/menu_button.dart';
+
+import 'package:firebase_admob/firebase_admob.dart';
+import 'package:tabela_treino/ads/ads_model.dart';
 
 class ListaTreinosProntos extends StatefulWidget {
   final String sexo;
@@ -18,6 +20,47 @@ class ListaTreinosProntos extends StatefulWidget {
 }
 
 class _ListaTreinosProntosState extends State<ListaTreinosProntos> {
+  // ANUNCIOS
+  //CREATE INTERSTITIAL
+  InterstitialAd interstitialAdTFacil;
+  bool _isInterstitialAdReady;
+  bool _isInterstitialAdShow = false;
+
+  void _loadInterstitialAd() {
+    interstitialAdTFacil.load();
+  }
+
+  @override
+  void initState() {
+    selectedLevel = widget.level;
+    selectedId = widget.idLevel;
+
+    super.initState();
+    _isInterstitialAdReady = false;
+
+    interstitialAdTFacil = InterstitialAd(
+      adUnitId: interstitialAdUnitId(),
+      listener: _onInterstitialAdEvent,
+    );
+    _loadInterstitialAd();
+  }
+
+  void _onInterstitialAdEvent(MobileAdEvent event) {
+    switch (event) {
+      case MobileAdEvent.loaded:
+        _isInterstitialAdReady = true;
+        break;
+      case MobileAdEvent.failedToLoad:
+        _isInterstitialAdReady = false;
+        print('Failed to load an interstitial ad');
+        break;
+      case MobileAdEvent.closed:
+        break;
+      default:
+      // do nothing
+    }
+  }
+
   String selectedLevel;
   String selectedId;
 
@@ -28,94 +71,36 @@ class _ListaTreinosProntosState extends State<ListaTreinosProntos> {
   ];
 
   @override
-  void initState() {
-    selectedLevel = widget.level;
-    selectedId = widget.idLevel;
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.level.toUpperCase(),
+          title: Text(selectedLevel.toUpperCase(),
               style: TextStyle(
                   fontSize: 20, fontFamily: "Gotham", color: Colors.grey[900])),
           actions: [
-            MenuButton<String>(
-              child: SizedBox(
-                width: 120,
-                height: 40,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 16, right: 11),
-                  color: Theme.of(context).primaryColor,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Flexible(
-                          child: Text(selectedLevel,
-                              overflow: TextOverflow.ellipsis)),
-                      const SizedBox(
-                        width: 12,
-                        height: 17,
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
+            DropdownButton<String>(
+              items: levels.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: new Text(
+                    value,
+                    style: TextStyle(
+                        color: Colors.black, fontFamily: 'GothamBook'),
                   ),
-                ),
-              ),
-              items: levels,
-              itemBuilder: (String value) => Container(
-                color: Theme.of(context).primaryColor,
-                height: 40,
-                alignment: Alignment.centerLeft,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16),
-                child: Text(value),
-              ),
-              toggledChild: Container(
-                color: Theme.of(context).primaryColor,
-                child: SizedBox(
-                  width: 93,
-                  height: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 11),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Flexible(
-                            child: Text(selectedLevel,
-                                overflow: TextOverflow.ellipsis)),
-                        const SizedBox(
-                          width: 12,
-                          height: 17,
-                          child: FittedBox(
-                            fit: BoxFit.fill,
-                            child: Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              onItemSelected: (String value) async {
+                );
+              }).toList(),
+              dropdownColor: Theme.of(context).primaryColor,
+              value: selectedLevel,
+              style: TextStyle(
+                  color: Colors.black.withOpacity(0.6),
+                  fontFamily: 'GothamBook'),
+              onChanged: (value) async {
                 if (value == levels[0]) {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   //checa se o usuario já tem um nivel escolhido
                   prefs.setString("levelChoice", levelId[0]);
-                  prefs.setString("levelName", value.toLowerCase());
+                  prefs.setString("levelName", value);
                   setState(() {
                     selectedId = levelId[0];
                   });
@@ -124,7 +109,7 @@ class _ListaTreinosProntosState extends State<ListaTreinosProntos> {
                       await SharedPreferences.getInstance();
                   //checa se o usuario já tem um nivel escolhido
                   prefs.setString("levelChoice", levelId[1]);
-                  prefs.setString("levelName", value.toLowerCase());
+                  prefs.setString("levelName", value);
                   setState(() {
                     selectedId = levelId[1];
                   });
@@ -200,22 +185,43 @@ class _ListaTreinosProntosState extends State<ListaTreinosProntos> {
   InkWell listaContainerProntos(
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot, int index) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-            context,
-            SlideLeftRoute(
-                page: TreinosProntos(
-                    widget.level,
-                    widget.idLevel,
-                    snapshot.data.docs[index].id,
-                    snapshot.data.docs[index]["title"])));
+      onTap: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        int timeAddsSeen = prefs.getInt('ads_seen') ?? 0;
+
+        if (_isInterstitialAdReady && timeAddsSeen > 2) {
+          interstitialAdTFacil.show().then((value) {
+            //TODO INSERIR CONTAGEM FIREBASE DE ACESSO
+
+            Navigator.push(
+                context,
+                SlideLeftRoute(
+                    page: TreinosProntos(
+                        widget.level,
+                        widget.idLevel,
+                        snapshot.data.docs[index].id,
+                        snapshot.data.docs[index]["title"])));
+          });
+        } else {
+          prefs.setInt('ads_seen', timeAddsSeen + 1);
+          //TODO INSERIR CONTAGEM FIREBASE DE ACESSO
+          Navigator.push(
+              context,
+              SlideLeftRoute(
+                  page: TreinosProntos(
+                      widget.level,
+                      widget.idLevel,
+                      snapshot.data.docs[index].id,
+                      snapshot.data.docs[index]["title"])));
+        }
       },
       child: Container(
         margin: EdgeInsets.symmetric(
-            vertical: index == 0 ? 20 : 10, horizontal: 10),
+            vertical: index == 0 ? 20 : 10, horizontal: 20),
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         decoration: BoxDecoration(
-          borderRadius: new BorderRadius.all(new Radius.circular(12.0)),
+          borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
           color: Theme.of(context).primaryColor,
           boxShadow: [
             BoxShadow(

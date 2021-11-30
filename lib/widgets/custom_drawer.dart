@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/screens/login_screen.dart';
 import 'package:tabela_treino/screens/musclesList_screen.dart';
@@ -9,6 +10,8 @@ import 'package:tabela_treino/tabs/home_tab.dart';
 import 'package:tabela_treino/tabs/planilha_tab.dart';
 import 'package:tabela_treino/tabs/profile_tab.dart';
 import 'package:tabela_treino/transition/transitions.dart';
+import 'package:tabela_treino/treinos_prontos/lista_treinos.dart';
+import 'package:tabela_treino/treinos_prontos/menuTF_screen.dart';
 
 // ignore: must_be_immutable
 class CustomDrawer extends StatelessWidget {
@@ -227,7 +230,7 @@ class CustomDrawer extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.home,
-                                size: 35,
+                                size: 30,
                                 color: Theme.of(context).primaryColor,
                               ),
                               SizedBox(width: 32),
@@ -235,7 +238,7 @@ class CustomDrawer extends StatelessWidget {
                                 "Página inicial",
                                 style: TextStyle(
                                   fontFamily: "GothamThin",
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               )
@@ -244,7 +247,7 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 12,
                       ),
                       InkWell(
                         onTap: () {
@@ -268,7 +271,7 @@ class CustomDrawer extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.list_outlined,
-                                size: 35,
+                                size: 30,
                                 color: Theme.of(context).primaryColor,
                               ),
                               SizedBox(width: 32),
@@ -277,7 +280,7 @@ class CustomDrawer extends StatelessWidget {
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontFamily: "GothamThin",
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               )
@@ -286,7 +289,7 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 12,
                       ),
                       InkWell(
                         onTap: () {
@@ -314,7 +317,7 @@ class CustomDrawer extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.line_weight,
-                                size: 35,
+                                size: 30,
                                 color: Theme.of(context).primaryColor,
                               ),
                               SizedBox(width: 32),
@@ -323,7 +326,7 @@ class CustomDrawer extends StatelessWidget {
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontFamily: "GothamThin",
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               )
@@ -332,7 +335,62 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 12,
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+
+                          String levelChoice = prefs.getString('levelChoice');
+
+                          String levelName = prefs.getString(
+                              'levelName'); //checa se o usuario já tem um nivel escolhido
+
+                          print(levelName);
+
+                          if (levelChoice == null) {
+                            showModalBottomSheet(
+                                backgroundColor: Colors.white,
+                                context: context,
+                                builder: (_) => MenuTreinosFaceis());
+                          } else {
+                            Navigator.push(
+                                context,
+                                SlideLeftRoute(
+                                    page: ListaTreinosProntos(
+                                  sexo: "masculino",
+                                  level: levelName,
+                                  idLevel: levelChoice,
+                                )));
+                          }
+                        },
+                        child: Container(
+                          height: 60,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.fitness_center,
+                                size: 30,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              SizedBox(width: 32),
+                              Text(
+                                "Treinos Fáceis",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: "GothamThin",
+                                  fontSize: 20,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12,
                       ),
                       InkWell(
                         onTap: () {
@@ -360,7 +418,7 @@ class CustomDrawer extends StatelessWidget {
                                 !model.userData["personal_type"]
                                     ? Icons.live_help
                                     : Icons.people_rounded,
-                                size: 35,
+                                size: 30,
                                 color: Theme.of(context).primaryColor,
                               ),
                               SizedBox(width: 32),
@@ -371,7 +429,7 @@ class CustomDrawer extends StatelessWidget {
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontFamily: "GothamThin",
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               )
@@ -380,7 +438,7 @@ class CustomDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 12,
                       ),
                       InkWell(
                         onTap: () {
@@ -399,7 +457,7 @@ class CustomDrawer extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.person,
-                                size: 35,
+                                size: 30,
                                 color: Theme.of(context).primaryColor,
                               ),
                               SizedBox(width: 32),
@@ -408,7 +466,7 @@ class CustomDrawer extends StatelessWidget {
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontFamily: "GothamThin",
-                                  fontSize: 25,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                 ),
                               )

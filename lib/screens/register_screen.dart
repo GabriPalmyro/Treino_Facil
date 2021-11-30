@@ -1,10 +1,10 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:tabela_treino/models/user_model.dart';
 import 'package:tabela_treino/tabs/home_tab.dart';
 
@@ -35,13 +35,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureTextPassConf = true;
   int sexo = 0;
   int personal = 1;
-
-  //pegar avatares do Firestore
-  Future getCarouselWidget() async {
-    var firestore = FirebaseFirestore.instance;
-    QuerySnapshot qn = await firestore.collection("avatars_icons").get();
-    return qn.docs;
-  }
 
   // ignore: unused_element
   void _mudarObscure(bool obscureText) {
@@ -104,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   bottom: Radius.elliptical(200, 50),
                 ),
               ),
-              elevation: 25,
+              elevation: 20,
               centerTitle: true,
               title: Text(
                 "Registrar\nnova conta",
@@ -215,13 +208,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               validator: (text) {
                                 if (text.isEmpty)
                                   return "Nome vazio";
-                                else if (text.length > 15)
+                                else if (text.length > 30)
                                   return "Máximo de 15 palavras";
                               },
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(left: 10),
+                            margin: EdgeInsets.only(left: 5),
                             width: 140,
                             child: TextFormField(
                               keyboardType: TextInputType.text,
@@ -251,7 +244,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               validator: (text) {
                                 if (text.isEmpty)
                                   return "Sobrenome vazio";
-                                else if (text.length > 25)
+                                else if (text.length > 30)
                                   return "Máximo de 25 palavras";
                               },
                             ),
@@ -348,47 +341,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            child: TextFormField(
-                              keyboardType: TextInputType.phone,
-                              controller: _dddIdController,
-                              style: TextStyle(color: colorPrincipal),
-                              enableInteractiveSelection: true,
-                              decoration: InputDecoration(
-                                labelText: "DDD",
-                                labelStyle: TextStyle(color: Colors.white),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.white, width: 2.0),
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.amber, width: 2.0),
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.red, width: 2.0),
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                              ),
-                              // ignore: missing_return
-                              validator: (text) {
-                                if (text.isEmpty || text.length > 2)
-                                  return "Inválido!";
-                              },
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.5,
                             child: TextFormField(
                               keyboardType: TextInputType.phone,
                               controller: _numberController,
                               style: TextStyle(color: colorPrincipal),
                               enableInteractiveSelection: true,
+                              inputFormatters: [
+                                // obrigatório
+                                FilteringTextInputFormatter.digitsOnly,
+                                TelefoneInputFormatter(),
+                              ],
                               decoration: InputDecoration(
-                                labelText: "Celular",
+                                labelText: "Número",
                                 labelStyle: TextStyle(color: Colors.white),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -410,7 +375,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               validator: (text) {
                                 if (text.isEmpty)
                                   return "Número Vazio!";
-                                else if (text.length > 9)
+                                else if (text.length < 11)
                                   return "Número pequeno";
                               },
                             ),
@@ -768,6 +733,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (_formKey.currentState.validate()) {
                             if (_countryIdController.text.isEmpty)
                               _countryIdController.text = "55";
+
+                            String phone_number =
+                                UtilBrasilFields.removeCaracteres(
+                                    _countryIdController.text.trim() +
+                                        _numberController.text.trim());
+
                             Map<String, dynamic> userData = {
                               "name":
                                   _nameController.text[0].trim().toUpperCase() +
@@ -778,10 +749,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   _lastNameController.text.trim().substring(1),
                               "email": _emailController.text.trim(),
                               "sexo": sexo == 0 ? "Masculino" : "Feminino",
-                              "phone_number": _countryIdController.text.trim() +
-                                  _dddIdController.text.trim() +
-                                  _numberController.text.trim(),
+                              "phone_number": "+" + phone_number,
                               "payApp": false,
+                              "data_criado": DateTime.now(),
                               "personal_type":
                                   personal == 0 ? true : false, //personal_type
                               "photoURL":
@@ -831,7 +801,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onSucess() {
     // ignore: deprecated_member_use
-    print("DEU CERTO");
     Navigator.pushAndRemoveUntil(
         context,
         new MaterialPageRoute(

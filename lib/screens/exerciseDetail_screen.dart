@@ -484,7 +484,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 child: AspectRatio(
-                  aspectRatio: 1.8,
+                  aspectRatio: 2,
                   child: Image.network(exercise["video"], loadingBuilder:
                       (BuildContext context, Widget child,
                           ImageChunkEvent loadingProgress) {

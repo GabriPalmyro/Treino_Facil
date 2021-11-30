@@ -419,7 +419,6 @@ class _MuscleListScreenState extends State<MuscleListScreen> {
                                     showModalBottomSheet(
                                         isScrollControlled: true,
                                         context: context,
-                                        //isScrollControlled: true,
                                         builder: (_) => VisualizarExercicio(
                                             _resultList[index]["video"]));
                                   }

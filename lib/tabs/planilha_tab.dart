@@ -156,7 +156,7 @@ class _PlanilhaScreenState extends State<PlanilhaScreen> {
                           ),
                           onPressed: () async {
                             int planLenght = await _lenghtPlan();
-                            if (planLenght < 4) {
+                            if (planLenght < 7) {
                               setState(() {
                                 _createNew(
                                     title: _titleController.text,

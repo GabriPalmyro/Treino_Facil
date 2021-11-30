@@ -1,7 +1,7 @@
 tabela_treino
 2.7
-file:///D:/Desktop/TREINO%20FACIL/Treino_Facil/
-file:///D:/Desktop/TREINO%20FACIL/Treino_Facil/lib/
+file:///D:/Desktop/TREINO%20FACIL/treino_facil/
+file:///D:/Desktop/TREINO%20FACIL/treino_facil/lib/
 admob_flutter
 2.7
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/admob_flutter-1.0.1/
@@ -20,8 +20,8 @@ file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.6.0/
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.6.0/lib/
 async
 2.12
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.5.0/
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.5.0/lib/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.6.1/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.6.1/lib/
 auto_size_text
 2.0
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/auto_size_text-2.1.0/
@@ -30,6 +30,10 @@ boolean_selector
 2.12
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0/
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0/lib/
+brasil_fields
+2.7
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/brasil_fields-0.6.1/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/brasil_fields-0.6.1/lib/
 carousel_slider
 2.6
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/carousel_slider-3.0.0/
@@ -210,10 +214,6 @@ matcher
 2.12
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.10/
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.10/lib/
-menu_button
-2.12
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/menu_button-1.4.2+1/
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/menu_button-1.4.2+1/lib/
 meta
 2.12
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.3.0/
@@ -304,8 +304,8 @@ file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_win
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences_windows-2.0.0/lib/
 source_span
 2.12
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.0/
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.0/lib/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.1/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.1/lib/
 stack_trace
 2.12
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0/
@@ -324,8 +324,8 @@ file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.0/
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.0/lib/
 test_api
 2.12
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.19/
-file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.19/lib/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.3.0/
+file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.3.0/lib/
 typed_data
 2.12
 file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/typed_data-1.3.0/

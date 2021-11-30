@@ -10,44 +10,6 @@ class MenuTreinosFaceis extends StatefulWidget {
 }
 
 class _MenuTreinosFaceisState extends State<MenuTreinosFaceis> {
-  // //CREATE INTERSTITIAL
-  // InterstitialAd interstitialAdMuscle;
-  // bool _isInterstitialAdReady;
-  // bool _isInterstitialAdShow = false;
-  // int adClick = 0;
-
-  // void _loadInterstitialAd() {
-  //   interstitialAdMuscle.load();
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _isInterstitialAdReady = false;
-
-  //   interstitialAdMuscle = InterstitialAd(
-  //     adUnitId: interstitialAdUnitId(),
-  //     listener: _onInterstitialAdEvent,
-  //   );
-  //   _loadInterstitialAd();
-  // }
-
-  // void _onInterstitialAdEvent(MobileAdEvent event) {
-  //   switch (event) {
-  //     case MobileAdEvent.loaded:
-  //       _isInterstitialAdReady = true;
-  //       break;
-  //     case MobileAdEvent.failedToLoad:
-  //       _isInterstitialAdReady = false;
-  //       print('Failed to load an interstitial ad');
-  //       break;
-  //     case MobileAdEvent.closed:
-  //       break;
-  //     default:
-  //     // do nothing
-  //   }
-  // }
-
   List level = ["owNiAMA7DN9trhiK3nDp", "RGwqW8GwUoNwnCem1KAH"];
 
   @override
@@ -93,14 +55,13 @@ class _MenuTreinosFaceisState extends State<MenuTreinosFaceis> {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               //checa se o usuario já tem um nivel escolhido
               prefs.setString("levelChoice", level[0]);
-              prefs.setString("levelName", 'iniciante');
-              //TODO TESTAR ISSO
+              prefs.setString("levelName", 'Iniciante');
               Navigator.push(
                   context,
                   SlideLeftRoute(
                     page: ListaTreinosProntos(
                       sexo: "masculino",
-                      level: "iniciante",
+                      level: "Iniciante",
                       idLevel: level[0],
                     ),
                   )).then((value) {
@@ -135,14 +96,13 @@ class _MenuTreinosFaceisState extends State<MenuTreinosFaceis> {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               //checa se o usuario já tem um nivel escolhido
               prefs.setString("levelChoice", level[1]);
-              prefs.setString("levelName", 'avançado');
-              //TODO TESTAR ISSO
+              prefs.setString("levelName", 'Avançado');
               Navigator.push(
                   context,
                   SlideLeftRoute(
                     page: ListaTreinosProntos(
                       sexo: "masculino",
-                      level: "avançado",
+                      level: "Avançado",
                       idLevel: level[1],
                     ),
                   )).then((value) {

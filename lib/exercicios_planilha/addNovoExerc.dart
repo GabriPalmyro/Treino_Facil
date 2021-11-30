@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 
@@ -154,264 +155,596 @@ class _AddNovoExercUniSetState extends State<AddNovoExercUniSet> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xff313131),
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10, top: 30),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_downward_sharp,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
+    // return Scaffold(
+    //   backgroundColor: Color(0xff313131),
+    //   body: Form(
+    //     key: _formKey,
+    //     child: Container(
+    //       height: height * 0.5,
+    //       child: Column(
+    //         children: [
+    //           Padding(
+    //             padding: const EdgeInsets.only(left: 10, top: 30),
+    //             child: Align(
+    //               alignment: Alignment.centerLeft,
+    //               child: IconButton(
+    //                   icon: Icon(
+    //                     Icons.arrow_downward_sharp,
+    //                     color: Theme.of(context).primaryColor,
+    //                   ),
+    //                   onPressed: () {
+    //                     Navigator.pop(context);
+    //                   }),
+    //             ),
+    //           ),
+    //           SizedBox(
+    //             height: 20,
+    //           ),
+    //           AutoSizeText(
+    //             "${exercise["title"].toString().toUpperCase()}",
+    //             style: TextStyle(
+    //                 fontFamily: "GothamBold",
+    //                 color: Colors.white,
+    //                 fontSize: 24),
+    //             maxLines: 2,
+    //             textAlign: TextAlign.center,
+    //           ),
+    //           SizedBox(
+    //             height: 20,
+    //           ),
+    //           Text(
+    //             "Execução",
+    //             style: TextStyle(
+    //               color: Colors.white,
+    //               fontFamily: "GothamBook",
+    //               fontSize: 18,
+    //             ),
+    //             textAlign: TextAlign.center,
+    //           ),
+    //           SizedBox(
+    //             height: 12,
+    //           ),
+    //           Padding(
+    //             padding: const EdgeInsets.symmetric(horizontal: 10),
+    //             child: AspectRatio(
+    //               aspectRatio: 2.5,
+    //               child: Image.network(exercise["video"], loadingBuilder:
+    //                   (BuildContext context, Widget child,
+    //                       ImageChunkEvent loadingProgress) {
+    //                 if (loadingProgress == null) {
+    //                   return child;
+    //                 }
+    //                 return Center(
+    //                     child: Column(
+    //                   mainAxisAlignment: MainAxisAlignment.center,
+    //                   children: [
+    //                     Row(
+    //                       mainAxisAlignment: MainAxisAlignment.center,
+    //                       children: [
+    //                         Text(
+    //                           "Carregando exercício: ",
+    //                           textAlign: TextAlign.center,
+    //                           style: TextStyle(
+    //                               color: Colors.white,
+    //                               fontSize: 20,
+    //                               fontFamily: "Gotham"),
+    //                         ),
+    //                         Text(
+    //                           "${_calculateProgress(loadingProgress).toStringAsFixed(2)}%",
+    //                           textAlign: TextAlign.center,
+    //                           style: TextStyle(
+    //                               color: Colors.amber,
+    //                               fontSize: 20,
+    //                               fontFamily: "Gotham"),
+    //                         ),
+    //                       ],
+    //                     ),
+    //                     SizedBox(
+    //                       height: 25,
+    //                     ),
+    //                     Padding(
+    //                       padding: const EdgeInsets.symmetric(horizontal: 40),
+    //                       child: LinearProgressIndicator(
+    //                         backgroundColor: Colors.amber,
+    //                         valueColor:
+    //                             AlwaysStoppedAnimation<Color>(Colors.white),
+    //                         value: (_calculateProgress(loadingProgress) * 0.01),
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ));
+    //               }, fit: BoxFit.contain),
+    //             ),
+    //           ),
+    //           SizedBox(
+    //             height: 12,
+    //           ),
+    //           Divider(
+    //             height: 5,
+    //             thickness: 2,
+    //             color: Theme.of(context).primaryColor.withOpacity(0.6),
+    //           ),
+    //           Container(
+    //             height: height * 0.5,
+    //             child: ListView(
+    //               children: [
+    //                 Padding(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       vertical: 20, horizontal: 40),
+    //                   child: Row(
+    //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                     children: [
+    //                       Container(
+    //                         width: MediaQuery.of(context).size.width * 0.23,
+    //                         child: TextFormField(
+    //                           keyboardType: TextInputType.numberWithOptions(
+    //                               signed: false),
+    //                           controller: _seriesController,
+    //                           style: TextStyle(
+    //                               color: Theme.of(context).primaryColor),
+    //                           enableInteractiveSelection: true,
+    //                           decoration: InputDecoration(
+    //                               labelText: "Séries",
+    //                               labelStyle: TextStyle(color: Colors.white),
+    //                               enabledBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.white, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               focusedBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.amber, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               errorBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.red, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               hintStyle: TextStyle(
+    //                                   color:
+    //                                       Colors.grey[300].withOpacity(0.3))),
+    //                           // ignore: missing_return
+    //                           validator: (text) {
+    //                             if (text.isEmpty) return "Vazio";
+    //                           },
+    //                         ),
+    //                       ),
+    //                       Container(
+    //                         width: MediaQuery.of(context).size.width * 0.23,
+    //                         child: TextFormField(
+    //                           keyboardType: TextInputType.numberWithOptions(
+    //                               signed: false),
+    //                           controller: _repsController,
+    //                           style: TextStyle(
+    //                               color: Theme.of(context).primaryColor),
+    //                           enableInteractiveSelection: true,
+    //                           decoration: InputDecoration(
+    //                               labelText: "Repetições",
+    //                               labelStyle: TextStyle(
+    //                                   color: Colors.white, fontSize: 12),
+    //                               enabledBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.white, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               focusedBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.amber, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               errorBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.red, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               hintStyle: TextStyle(
+    //                                   color:
+    //                                       Colors.grey[300].withOpacity(0.3))),
+    //                           // ignore: missing_return
+    //                           validator: (text) {
+    //                             if (text.isEmpty) return "Vazio";
+    //                           },
+    //                         ),
+    //                       ),
+    //                       Container(
+    //                         width: MediaQuery.of(context).size.width * 0.23,
+    //                         child: TextFormField(
+    //                           keyboardType: TextInputType.numberWithOptions(
+    //                               signed: false),
+    //                           controller: _pesoController,
+    //                           style: TextStyle(
+    //                               color: Theme.of(context).primaryColor),
+    //                           enableInteractiveSelection: true,
+    //                           decoration: InputDecoration(
+    //                               labelText: "Carga",
+    //                               labelStyle: TextStyle(color: Colors.white),
+    //                               enabledBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.white, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               focusedBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.amber, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               errorBorder: OutlineInputBorder(
+    //                                 borderSide: const BorderSide(
+    //                                     color: Colors.red, width: 2.0),
+    //                                 borderRadius: BorderRadius.circular(8.0),
+    //                               ),
+    //                               hintText: "Kg",
+    //                               hintStyle: TextStyle(
+    //                                   color:
+    //                                       Colors.grey[300].withOpacity(0.3))),
+    //                           // ignore: missing_return
+    //                           validator: (text) {
+    //                             if (text.isEmpty) return "Vazio";
+    //                           },
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                 ),
+    //                 Padding(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       horizontal: 20.0, vertical: 5),
+    //                   child: TextField(
+    //                     maxLength: 150,
+    //                     maxLines: null,
+    //                     enableInteractiveSelection: true,
+    //                     style: TextStyle(color: Theme.of(context).primaryColor),
+    //                     decoration: InputDecoration(
+    //                       labelText: "Observação adicional",
+    //                       labelStyle: TextStyle(color: Colors.grey[600]),
+    //                       enabledBorder: OutlineInputBorder(
+    //                         borderSide: const BorderSide(
+    //                             color: Colors.grey, width: 2.0),
+    //                         borderRadius: BorderRadius.circular(5.0),
+    //                       ),
+    //                       focusedBorder: OutlineInputBorder(
+    //                         borderSide: const BorderSide(
+    //                             color: Colors.grey, width: 2.0),
+    //                         borderRadius: BorderRadius.circular(5.0),
+    //                       ),
+    //                       errorBorder: OutlineInputBorder(
+    //                         borderSide:
+    //                             const BorderSide(color: Colors.red, width: 2.0),
+    //                         borderRadius: BorderRadius.circular(5.0),
+    //                       ),
+    //                     ),
+    //                     controller: _observTextController,
+    //                   ),
+    //                 ),
+    //                 Container(
+    //                   margin: EdgeInsets.symmetric(
+    //                       horizontal: MediaQuery.of(context).size.width * 0.3),
+    //                   height: 50,
+    //                   child: InkWell(
+    //                     onTap: () async {
+    //                       if (_formKey.currentState.validate()) {
+    //                         String cargaTemp = _pesoController.text
+    //                             .replaceAll(new RegExp(r'[^0-9]'), '');
+    //                         int cargaTempInt = int.parse(cargaTemp);
+    //                         SharedPreferences prefs =
+    //                             await SharedPreferences.getInstance();
+    //                         bool adSeen = prefs.getBool('ad_seen');
+
+    //                         if (_isInterstitialAdReady &&
+    //                             !_isInterstitialAdShow &&
+    //                             !adSeen) {
+    //                           await prefs.setBool('ad_seen', true);
+    //                           interstitialAdMuscle.show();
+    //                           _isInterstitialAdShow = true;
+    //                         } else {
+    //                           await prefs.setBool('ad_seen', false);
+    //                           _addExercicio(
+    //                               muscleId: exercise["muscleId"],
+    //                               title: exercise["title"],
+    //                               video: exercise["video"],
+    //                               planilhaId: treinoId,
+    //                               userId: authId,
+    //                               id: exercise.id,
+    //                               obs: _observTextController.text.isNotEmpty
+    //                                   ? _observTextController.text
+    //                                   : "",
+    //                               series: _seriesController.text,
+    //                               reps: _repsController.text,
+    //                               carga: cargaTempInt,
+    //                               pos: qntdExe);
+    //                         }
+    //                       }
+    //                     },
+    //                     child: Center(
+    //                       child: Text(
+    //                         "Adicionar",
+    //                         textAlign: TextAlign.center,
+    //                         style: TextStyle(
+    //                             color: Colors.white,
+    //                             fontFamily: "GothamBook",
+    //                             fontSize: set == 0 ? 18 : 14),
+    //                       ),
+    //                     ),
+    //                   ),
+    //                   decoration: BoxDecoration(
+    //                       color: Colors.green,
+    //                       borderRadius: BorderRadius.all(Radius.circular(5)),
+    //                       boxShadow: [
+    //                         BoxShadow(
+    //                             color: Colors.black.withOpacity(0.2),
+    //                             spreadRadius: 5,
+    //                             blurRadius: 8,
+    //                             offset: Offset(0, 3))
+    //                       ]),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
+
+    return Container(
+      height: height * 0.8,
+      child: Container(
+          height: height * 0.8,
+          decoration: new BoxDecoration(
+              color: Color(0xff313131),
+              borderRadius: new BorderRadius.only(
+                  topLeft: const Radius.circular(25.0),
+                  topRight: const Radius.circular(25.0))),
+          child: Padding(
+            padding: EdgeInsets.only(top: 18.0, right: 18, left: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 14,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              AutoSizeText(
-                "${exercise["title"].toString().toUpperCase()}",
-                style: TextStyle(
-                    fontFamily: "GothamBold",
-                    color: Colors.white,
-                    fontSize: 24),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Execução",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: "GothamBook",
-                  fontSize: 18,
+                Container(
+                  width: width * 0.6,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(5)),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: AspectRatio(
-                  aspectRatio: 2,
-                  child: Image.network(exercise["video"], loadingBuilder:
-                      (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-                    return Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Carregando exercício: ",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontFamily: "Gotham"),
-                            ),
-                            Text(
-                              "${_calculateProgress(loadingProgress).toStringAsFixed(2)}%",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.amber,
-                                  fontSize: 20,
-                                  fontFamily: "Gotham"),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: LinearProgressIndicator(
-                            backgroundColor: Colors.amber,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                            value: (_calculateProgress(loadingProgress) * 0.01),
-                          ),
-                        ),
-                      ],
-                    ));
-                  }, fit: BoxFit.contain),
+                SizedBox(
+                  height: 28,
                 ),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Divider(
-                height: 5,
-                thickness: 2,
-                color: Theme.of(context).primaryColor.withOpacity(0.6),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.6),
+                  child: Divider(
+                    color: Colors.black38.withOpacity(0.4),
+                  ),
+                ),
+                AutoSizeText(
+                  'Defina as propriedades desse exercício',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontFamily: 'GothamBold'),
+                ),
+                SizedBox(
+                  height: 32,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.23,
-                      child: TextFormField(
-                        keyboardType:
-                            TextInputType.numberWithOptions(signed: false),
-                        controller: _seriesController,
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                        enableInteractiveSelection: true,
-                        decoration: InputDecoration(
-                            labelText: "Séries",
-                            labelStyle: TextStyle(color: Colors.white),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.white, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.amber, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.red, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            hintStyle: TextStyle(
-                                color: Colors.grey[300].withOpacity(0.3))),
-                        // ignore: missing_return
-                        validator: (text) {
-                          if (text.isEmpty) return "Vazio";
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.23,
-                      child: TextFormField(
-                        keyboardType:
-                            TextInputType.numberWithOptions(signed: false),
-                        controller: _repsController,
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                        enableInteractiveSelection: true,
-                        decoration: InputDecoration(
-                            labelText: "Repetições",
-                            labelStyle:
-                                TextStyle(color: Colors.white, fontSize: 12),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.white, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.amber, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.red, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            hintStyle: TextStyle(
-                                color: Colors.grey[300].withOpacity(0.3))),
-                        // ignore: missing_return
-                        validator: (text) {
-                          if (text.isEmpty) return "Vazio";
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.23,
-                      child: TextFormField(
-                        keyboardType:
-                            TextInputType.numberWithOptions(signed: false),
-                        controller: _pesoController,
-                        style: TextStyle(color: Theme.of(context).primaryColor),
-                        enableInteractiveSelection: true,
-                        decoration: InputDecoration(
-                            labelText: "Carga",
-                            labelStyle: TextStyle(color: Colors.white),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.white, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.amber, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.red, width: 2.0),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            hintText: "Kg",
-                            hintStyle: TextStyle(
-                                color: Colors.grey[300].withOpacity(0.3))),
-                        // ignore: missing_return
-                        validator: (text) {
-                          if (text.isEmpty) return "Vazio";
-                        },
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Séries',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'GothamBook',
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              TextField(
+                                controller: _seriesController,
+                                style: TextStyle(
+                                    color: Colors.white, fontFamily: 'Gotham'),
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.white, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.amber, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.red, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    hintStyle: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        )),
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Repetições',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'GothamBook',
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              TextField(
+                                controller: _repsController,
+                                style: TextStyle(
+                                    color: Colors.white, fontFamily: 'Gotham'),
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.white, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.amber, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.red, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    hintStyle: TextStyle(
+                                        color:
+                                            Colors.grey[300].withOpacity(0.3))),
+                              ),
+                            ],
+                          ),
+                        )),
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Carga',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'GothamBook',
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              TextField(
+                                controller: _pesoController,
+                                style: TextStyle(
+                                    color: Colors.white, fontFamily: 'Gotham'),
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9]')),
+                                ],
+                                decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.white, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.amber, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          color: Colors.red, width: 2.0),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    suffixText: 'KG',
+                                    suffixStyle: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'GothamBook'),
+                                    hintStyle: TextStyle(
+                                        color:
+                                            Colors.grey[300].withOpacity(0.3))),
+                              ),
+                            ],
+                          ),
+                        ))
+                      ],
                     ),
                   ],
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-                child: TextField(
-                  maxLength: 150,
-                  maxLines: null,
-                  enableInteractiveSelection: true,
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                  decoration: InputDecoration(
-                    labelText: "Observação adicional",
-                    labelStyle: TextStyle(color: Colors.grey[600]),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 2.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 2.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.red, width: 2.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  controller: _observTextController,
+                SizedBox(
+                  height: 24,
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.3),
-                height: 50,
-                child: InkWell(
-                  onTap: () async {
-                    if (_formKey.currentState.validate()) {
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 12,
+                    right: width < 990 ? 12 : width * .6,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        maxLines: null,
+                        controller: _observTextController,
+                        style: TextStyle(
+                            color: Colors.white, fontFamily: 'GothamBook'),
+                        decoration: InputDecoration(
+                          helperText: 'Observação',
+                          helperStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontFamily: 'GothamBook'),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.white, width: 2.0),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.amber, width: 2.0),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide:
+                                const BorderSide(color: Colors.red, width: 2.0),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          hintStyle: TextStyle(
+                              color: Colors.grey[300].withOpacity(0.3)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 32,
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                        enableFeedback: true,
+                        elevation: 5,
+                        shadowColor: Colors.green.withOpacity(0.4)),
+                    onPressed: () async {
                       String cargaTemp = _pesoController.text
                           .replaceAll(new RegExp(r'[^0-9]'), '');
                       int cargaTempInt = int.parse(cargaTemp);
@@ -442,34 +775,23 @@ class _AddNovoExercUniSetState extends State<AddNovoExercUniSet> {
                             carga: cargaTempInt,
                             pos: qntdExe);
                       }
-                    }
-                  },
-                  child: Center(
-                    child: Text(
-                      "Adicionar",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "GothamBook",
-                          fontSize: set == 0 ? 18 : 14),
+                    },
+                    child: const Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10),
+                      child: Text(
+                        "Adicionar exercício",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Gotham',
+                            fontSize: 22),
+                      ),
                     ),
                   ),
-                ),
-                decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 8,
-                          offset: Offset(0, 3))
-                    ]),
-              ),
-            ],
-          ),
-        ),
-      ),
+                )
+              ],
+            ),
+          )),
     );
   }
 }

@@ -22,14 +22,14 @@ class _VisualizarExercicioState extends State<VisualizarExercicio> {
 
     return Container(
       color: Colors.grey[900],
-      height: height * 0.7,
+      height: height * 0.8,
       child: Column(
         children: [
           SizedBox(
             height: 18,
           ),
           Container(
-            width: width * 0.6,
+            width: width * 0.7,
             height: 5,
             decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.3),

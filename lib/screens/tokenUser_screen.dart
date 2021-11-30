@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tabela_treino/models/user_model.dart';
@@ -24,14 +25,18 @@ class _TokenScreenState extends State<TokenScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
 
-  String _showNumber(String number) {
+  String _showNumber(String numberOld) {
+    String number = UtilBrasilFields.removeCaracteres(numberOld);
+
     var ddd = number.substring(2, 4);
     var numberPhone1 = number.substring(4, 9);
     var numberPhone2 = number.substring(9, 13);
     return "(" + ddd + ")" + " " + numberPhone1 + "-" + numberPhone2;
   }
 
-  _sendWhatsAppMessage({@required String phone}) async {
+  _sendWhatsAppMessage({@required String phoneOld}) async {
+    String phone = UtilBrasilFields.removeCaracteres(phoneOld);
+
     String message = "Olá, estou com dúvidas, você pode me ajudar?";
     //var whatsappUrl = "whatsapp://send?phone=$phone=$message";
     String url() {
@@ -144,7 +149,6 @@ class _TokenScreenState extends State<TokenScreen> {
           "client_phoneNumber": model.userData["phone_number"],
           "client_photo": model.userData["photoURL"],
         }).then((value) async {
-          print("DEU CERTO CARAIO");
           await FirebaseFirestore.instance
               .collection("users")
               .doc(model.firebaseUser.uid)
@@ -518,7 +522,7 @@ class _TokenScreenState extends State<TokenScreen> {
                                 InkWell(
                                   onTap: () {
                                     _sendWhatsAppMessage(
-                                        phone: snapshot.data.docs[0]
+                                        phoneOld: snapshot.data.docs[0]
                                             ["personal_phoneNumber"]);
                                   },
                                   child: Container(
@@ -658,179 +662,8 @@ class _TokenScreenState extends State<TokenScreen> {
                                           ["personal_email"]);
                                       return Column(
                                         children: [
-                                          Container(
-                                            margin: EdgeInsets.all(5),
-                                            child: Container(
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(50),
-                                                        child: Container(
-                                                          height: 50,
-                                                          width: 50,
-                                                          decoration:
-                                                              new BoxDecoration(
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                                spreadRadius: 1,
-                                                                blurRadius: 2,
-                                                                offset: Offset(
-                                                                    0,
-                                                                    2), // changes position of shadow
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          child: Image.network(
-                                                              snapshot.data
-                                                                      .docs[0][
-                                                                  "personal_photo"],
-                                                              fit: BoxFit
-                                                                  .fitWidth,
-                                                              loadingBuilder:
-                                                                  (BuildContext
-                                                                          context,
-                                                                      Widget
-                                                                          child,
-                                                                      ImageChunkEvent
-                                                                          loadingProgress) {
-                                                            if (loadingProgress ==
-                                                                null) {
-                                                              return child;
-                                                            }
-                                                            return Center(
-                                                                child:
-                                                                    CircularProgressIndicator());
-                                                          }),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal: 5,
-                                                                vertical: 5),
-                                                        child: Column(
-                                                          children: [
-                                                            AutoSizeText(
-                                                              snapshot
-                                                                      .data
-                                                                      .docs[
-                                                                          index]
-                                                                          [
-                                                                          "personal_name"]
-                                                                          [0]
-                                                                      .toUpperCase() +
-                                                                  snapshot
-                                                                      .data
-                                                                      .docs[
-                                                                          index]
-                                                                          [
-                                                                          "personal_name"]
-                                                                      .substring(
-                                                                          1),
-                                                              maxFontSize: 20,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontFamily:
-                                                                      "Gotham",
-                                                                  fontSize: 15),
-                                                            ),
-                                                            AutoSizeText(
-                                                              snapshot.data
-                                                                          .docs[
-                                                                      index][
-                                                                  "personal_email"],
-                                                              maxFontSize: 18,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontFamily:
-                                                                      "GothamThin",
-                                                                  fontSize: 13),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          TextButton(
-                                                              style:
-                                                                  ButtonStyle(
-                                                                overlayColor: MaterialStateProperty.all<
-                                                                        Color>(
-                                                                    Colors.red
-                                                                        .withOpacity(
-                                                                            0.3)),
-                                                              ),
-                                                              onPressed: () {
-                                                                _deletePersonalRequest(
-                                                                    snapshot
-                                                                        .data
-                                                                        .docs[
-                                                                            index]
-                                                                        .id);
-                                                              },
-                                                              child: Text(
-                                                                "Excluir",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .red),
-                                                              )),
-                                                          TextButton(
-                                                              style:
-                                                                  ButtonStyle(
-                                                                overlayColor: MaterialStateProperty.all<
-                                                                        Color>(
-                                                                    Colors.green
-                                                                        .withOpacity(
-                                                                            0.3)),
-                                                              ),
-                                                              onPressed: () {
-                                                                _acceptPersonalRequest(
-                                                                    snapshot.data
-                                                                            .docs[
-                                                                        index]);
-                                                              },
-                                                              child: Text(
-                                                                "Aceitar",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .green),
-                                                              )),
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Divider(
-                                                    color: Colors.grey[900],
-                                                    thickness: 0.5,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                          containerPersonalList(
+                                              snapshot, index),
                                         ],
                                       );
                                     })
@@ -840,5 +673,123 @@ class _TokenScreenState extends State<TokenScreen> {
                 ],
               )),
         ));
+  }
+
+  Container containerPersonalList(
+      AsyncSnapshot<QuerySnapshot> snapshot, int index) {
+    return Container(
+      margin: EdgeInsets.all(5),
+      child: Container(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      height: 45,
+                      width: 45,
+                      decoration: new BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 2), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Image.network(
+                          snapshot.data.docs[0]["personal_photo"],
+                          fit: BoxFit.cover, loadingBuilder:
+                              (BuildContext context, Widget child,
+                                  ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(child: CircularProgressIndicator());
+                      }),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 4,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            snapshot.data.docs[index]["personal_name"][0]
+                                    .toUpperCase() +
+                                snapshot.data.docs[index]["personal_name"]
+                                    .substring(1),
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Gotham",
+                                fontSize: 15),
+                          ),
+                          AutoSizeText(
+                            snapshot.data.docs[index]["personal_email"],
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "GothamThin",
+                                fontSize: 10),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 3,
+                  child: Row(
+                    children: [
+                      TextButton(
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all<Color>(
+                                Colors.red.withOpacity(0.3)),
+                          ),
+                          onPressed: () {
+                            _deletePersonalRequest(
+                                snapshot.data.docs[index].id);
+                          },
+                          child: Text(
+                            "Excluir",
+                            style: TextStyle(fontSize: 12, color: Colors.red),
+                          )),
+                      TextButton(
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all<Color>(
+                                Colors.green.withOpacity(0.3)),
+                          ),
+                          onPressed: () {
+                            _acceptPersonalRequest(snapshot.data.docs[index]);
+                          },
+                          child: Text(
+                            "Aceitar",
+                            style: TextStyle(fontSize: 12, color: Colors.green),
+                          )),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Divider(
+              color: Colors.grey[900],
+              thickness: 0.5,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

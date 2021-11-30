@@ -142,7 +142,7 @@ class _HomeTabState extends State<HomeTab> {
               elevation: 25,
               centerTitle: true,
               title: Text(
-                "Treino Fácil",
+                "Início",
                 style: TextStyle(
                     color: Colors.grey[850],
                     fontFamily: "GothamBold",
@@ -187,7 +187,7 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
                 SizedBox(
-                  height: _planilhaList.isEmpty ? 10 : 20,
+                  height: _planilhaList.isEmpty ? 10 : 14,
                 ),
                 _isLoading
                     ? Container(
@@ -370,8 +370,12 @@ class _HomeTabState extends State<HomeTab> {
 
                           String levelChoice = prefs.getString('levelChoice');
 
-                          String levelName = prefs.getString('levelName') ??
-                              "iniciante"; //checa se o usuario já tem um nivel escolhido
+                          //prefs.setString('levelName', 'Iniciante');
+
+                          String levelName = prefs.getString(
+                              'levelName'); //checa se o usuario já tem um nivel escolhido
+
+                          print(levelName);
 
                           if (levelChoice == null) {
                             showModalBottomSheet(

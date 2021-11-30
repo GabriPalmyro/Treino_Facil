@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/exercicios_planilha/addNovoExerc.dart';
-import 'package:tabela_treino/screens/exerciseDetail_screen.dart';
 import 'package:tabela_treino/widgets/custom_drawer.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
@@ -493,7 +492,7 @@ class _NovoExercicioSelState extends State<NovoExercicioSel> {
                                   //         padding)));
 
                                   showModalBottomSheet(
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: Colors.transparent,
                                       context: context,
                                       isScrollControlled: true,
                                       builder: (_) => AddNovoExercUniSet(

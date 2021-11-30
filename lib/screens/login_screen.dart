@@ -45,21 +45,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               elevation: 25,
               centerTitle: true,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'images/logo.png',
-                    height: 100,
-                  ),
-                  Text(
-                    "Treino Fácil".toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.grey[850],
-                        fontFamily: "GothamBold",
-                        fontSize: 30),
-                  ),
-                ],
+              title: Image.asset(
+                'images/logo.png',
+                height: 120,
               ),
               backgroundColor: colorPrincipal,
             ),
@@ -254,6 +242,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white,
                                 fontFamily: "GothamLight",
                                 fontSize: 15),
+                          ),
+                          SizedBox(
+                            height: 12,
                           ),
                           TextButton(
                               onPressed: () {

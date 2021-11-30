@@ -1,6 +1,12 @@
+import 'dart:async';
+
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:tabela_treino/ads/ads_model.dart';
 import 'package:tabela_treino/treinos_prontos/visualizarExe.dart';
 
 class TreinosProntos extends StatefulWidget {
@@ -36,6 +42,7 @@ class _TreinosProntosState extends State<TreinosProntos> {
               .collection("masculino")
               .doc(widget.idPlanilha)
               .collection("exercicios")
+              .orderBy('pos')
               .get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -68,14 +75,13 @@ class _TreinosProntosState extends State<TreinosProntos> {
                 ),
               );
             } else
-              return SafeArea(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.docs.length,
-                    itemBuilder: (context, index) {
-                      return exercicioContainerUni(context, snapshot, index);
-                    }),
-              );
+              return ListView.builder(
+                  shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return exercicioContainerUni(context, snapshot, index);
+                  });
           }),
     );
   }

@@ -344,7 +344,7 @@ class _TokenPersonalScreenState extends State<TokenPersonalScreen> {
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontFamily: "GothamThin",
-                                          fontSize: 12),
+                                          fontSize: 10),
                                     )
                                   ],
                                 ),
